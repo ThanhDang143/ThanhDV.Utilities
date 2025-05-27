@@ -1402,6 +1402,11 @@ namespace ThanhDV.Utilities.DebugExtensions
 
 		#region ThanhDV.DebugLog
 
+		public static void Log(string message)
+		{
+			Log(message, Color.white);
+		}
+
 		public static void Log(string message, Color color = default(Color))
 		{
 			color = (color == default(Color)) ? Color.white : color;
