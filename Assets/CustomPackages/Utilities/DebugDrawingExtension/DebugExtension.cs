@@ -1407,13 +1407,13 @@ namespace ThanhDV.Utilities.DebugExtensions
 			Log(message, Color.white);
 		}
 
-		public static void Log(string message, Color color = default(Color))
+		public static void Log(string message, Color color)
 		{
 			color = (color == default(Color)) ? Color.white : color;
 			Debug.Log("<color=#" + ColorUtility.ToHtmlStringRGBA(color) + ">" + message + "</color>");
 		}
 
-		public static void Log(string message, string hexColor = "FFFFFF")
+		public static void Log(string message, string hexColor)
 		{
 			Debug.Log("<color=#" + hexColor + ">" + message + "</color>");
 		}
