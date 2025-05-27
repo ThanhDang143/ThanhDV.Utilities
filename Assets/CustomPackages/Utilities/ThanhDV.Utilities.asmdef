@@ -1,3 +1,14 @@
 {
-	"name": "ThanhDV.Utilities"
+    "name": "ThanhDV.Utilities",
+    "rootNamespace": "ThanhDV.Utilities",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }
