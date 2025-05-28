@@ -15,7 +15,7 @@ namespace ThanhDV.Utilities.UIAdaptation
             if (setupOnAwake) Setup();
         }
 
-        private void Setup()
+        public void Setup()
         {
             if (!transform.parent.TryGetComponent<RectTransform>(out var parentRectTransform)) parentRectTransform = transform.parent.GetComponentInParent<RectTransform>();
             if (parentRectTransform == null)
