@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using ThanhDV.Utilities.DebugExtensions;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,6 +10,13 @@ namespace ThanhDV.Utilities.UIAdaptation
     {
         [Space]
         [SerializeField] private bool setupOnAwake = true;
+
+        private bool isSetupComplete;
+
+        private void Awake()
+        {
+            isSetupComplete = false;
+        }
 
         private void Start()
         {
@@ -39,6 +47,24 @@ namespace ThanhDV.Utilities.UIAdaptation
             }
 
             rectTransform.sizeDelta = bgSize;
+            isSetupComplete = true;
+        }
+
+        public Vector2 GetSize()
+        {
+            RectTransform rectTransform = GetComponent<RectTransform>();
+            return rectTransform.sizeDelta;
+        }
+
+        public async Task<Vector2> GetSetupSize(float timeout = 1f)
+        {
+            while (!isSetupComplete && timeout > 0)
+            {
+                await Task.Yield();
+            }
+
+            if (!isSetupComplete) DebugExtension.Log("Background was not setup!", Color.yellow);
+            return GetComponent<RectTransform>().sizeDelta;
         }
     }
 }
