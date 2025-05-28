@@ -30,7 +30,7 @@ namespace ThanhDV.Utilities.EventDispatcher
         {
             if (delegator == null || !_maps.ContainsKey(subject)) return;
 
-            _maps.AddOrUpdate(subject, null, (key, existing) =>
+            _maps.AddOrUpdate(subject, (Delegator)null, (key, existing) =>
             {
                 existing -= delegator;
                 return existing == null ? null : existing;
