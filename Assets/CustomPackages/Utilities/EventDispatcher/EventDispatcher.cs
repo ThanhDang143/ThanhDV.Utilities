@@ -1,26 +1,22 @@
 using System;
 using System.Collections.Concurrent;
 using ThanhDV.Utilities.DebugExtensions;
-using ThanhDV.Utilities.Singleton;
 using UnityEngine;
 
 namespace ThanhDV.Utilities.EventDispatcher
 {
-    public class EventDispatcher : Singleton<EventDispatcher>
+    public class EventDispatcher
     {
         public delegate void Delegator(object data);
 
-        private readonly ConcurrentDictionary<string, Delegator> _maps;
+        private static readonly ConcurrentDictionary<string, Delegator> _maps = new ConcurrentDictionary<string, Delegator>();
 
-        public EventDispatcher()
-        {
-            _maps = new ConcurrentDictionary<string, Delegator>();
-        }
+        public EventDispatcher() { }
 
         /// <summary>
         /// Registers a delegate to a specific subject.
         /// </summary>
-        public void Register(string subject, Delegator delegator)
+        public static void Register(string subject, Delegator delegator)
         {
             if (delegator == null) return;
 
@@ -30,7 +26,7 @@ namespace ThanhDV.Utilities.EventDispatcher
         /// <summary>
         /// Unregisters a delegate from a specific subject.
         /// </summary>
-        public void Unregister(string subject, Delegator delegator)
+        public static void Unregister(string subject, Delegator delegator)
         {
             if (delegator == null || !_maps.ContainsKey(subject)) return;
 
@@ -50,7 +46,7 @@ namespace ThanhDV.Utilities.EventDispatcher
         /// <summary>
         /// Posts an event to all delegates registered under the specified subject.
         /// </summary>
-        public void Post(string subject, object data = null)
+        public static void Post(string subject, object data = null)
         {
             if (_maps.TryGetValue(subject, out var map) && map != null)
             {
