@@ -16,7 +16,7 @@ namespace ThanhDV.Utilities.EventDispatcher
         /// <summary>
         /// Registers a delegate to a specific subject.
         /// </summary>
-        public static void Register(string subject, Delegator delegator)
+        public static void Subscribe(string subject, Delegator delegator)
         {
             if (delegator == null) return;
 
@@ -26,7 +26,7 @@ namespace ThanhDV.Utilities.EventDispatcher
         /// <summary>
         /// Unregisters a delegate from a specific subject.
         /// </summary>
-        public static void Unregister(string subject, Delegator delegator)
+        public static void Unsubscribe(string subject, Delegator delegator)
         {
             if (delegator == null || !_maps.ContainsKey(subject)) return;
 

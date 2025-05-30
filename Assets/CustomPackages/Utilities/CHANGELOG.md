@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.0.16] - 2025-05-28
+
+### Updated
+#### EventDispatcher
+- Rename `Register` → `Subscribe`, `Unregister` → `Unsubscribe` 
+
 ## [0.0.15] - 2025-05-28
 
 ### Added
