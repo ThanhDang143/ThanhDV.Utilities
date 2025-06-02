@@ -1,5 +1,7 @@
+using System.Linq;
 using System.Threading.Tasks;
 using ThanhDV.Utilities.DebugExtensions;
+using ThanhDV.Utilities.RectTransformExtensions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,6 +35,7 @@ namespace ThanhDV.Utilities.UIAdaptation
             }
 
             RectTransform rectTransform = GetComponent<RectTransform>();
+            rectTransform.SetAnchor(AnchorPresets.MiddleCenter);
             Image image = GetComponent<Image>();
             Vector3 imageSize = image.sprite.bounds.size;
             Vector2 bgSize = Vector2.zero;

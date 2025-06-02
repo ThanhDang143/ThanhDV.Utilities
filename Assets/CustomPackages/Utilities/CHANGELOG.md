@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.0.17] - 2025-05-28
+
+### Updated
+#### RectTransformExtensions
+- Auto set anchor MiddleCenter;
+
 ## [0.0.16] - 2025-05-28
 
 ### Updated
