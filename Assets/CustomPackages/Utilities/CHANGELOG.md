@@ -1,5 +1,9 @@
 # Changelog
 
+## [0.0.18] - 2025-06-17
+### Add
+#### SceneSwitcher
+
 ## [0.0.17] - 2025-05-28
 
 ### Updated
