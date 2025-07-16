@@ -1400,26 +1400,6 @@ namespace ThanhDV.Utilities.DebugExtensions
 
 		#endregion
 
-		#region ThanhDV.DebugLog
-
-		public static void Log(string message)
-		{
-			Log(message, Color.white);
-		}
-
-		public static void Log(string message, Color color)
-		{
-			color = (color == default(Color)) ? Color.white : color;
-			Debug.Log("<color=#" + ColorUtility.ToHtmlStringRGBA(color) + ">" + message + "</color>");
-		}
-
-		public static void Log(string message, string hexColor)
-		{
-			Debug.Log("<color=#" + hexColor + ">" + message + "</color>");
-		}
-
-		#endregion
-
 		#region DebugFunctions
 
 		/// <summary>

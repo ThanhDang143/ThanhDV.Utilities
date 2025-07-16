@@ -18,7 +18,7 @@ namespace ThanhDV.Utilities.Singleton
                     {
                         _instance = new T();
 
-                        DebugExtension.Log($"{_instance.GetType().Name} instance is null!!! Auto create new instance!!!", Color.yellow);
+                        Debug.Log($"<color=red>{_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
                     }
                     return _instance;
                 }
@@ -48,7 +48,7 @@ namespace ThanhDV.Utilities.Singleton
                             _instance = new GameObject().AddComponent<T>();
                             _instance.gameObject.name = _instance.GetType().Name;
 
-                            DebugExtension.Log($"{_instance.GetType().Name} instance is null!!! Auto create new instance!!!", Color.yellow);
+                            Debug.Log($"<color=red>{_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
                         }
                     }
                     return _instance;
@@ -91,7 +91,7 @@ namespace ThanhDV.Utilities.Singleton
                             _instance = new GameObject().AddComponent<T>();
                             _instance.gameObject.name = _instance.GetType().Name;
 
-                            DebugExtension.Log($"{_instance.GetType().Name} instance is null!!! Auto create new instance!!!", Color.yellow);
+                            Debug.Log($"<color=red>{_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
                         }
                         DontDestroyOnLoad(_instance);
                     }

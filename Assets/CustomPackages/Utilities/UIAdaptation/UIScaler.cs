@@ -1,4 +1,3 @@
-using ThanhDV.Utilities.DebugExtensions;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,7 +22,7 @@ namespace ThanhDV.Utilities.UIAdaptation
         {
             if (!TryGetComponent(out CanvasScaler scaler))
             {
-                DebugExtension.Log("CanvasScaler not found!!!", Color.red);
+                Debug.Log("<color=red>CanvasScaler not found!!!</color>");
                 return;
             }
 

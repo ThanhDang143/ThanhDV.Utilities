@@ -30,7 +30,7 @@ namespace ThanhDV.Utilities.UIAdaptation
             if (!transform.parent.TryGetComponent<RectTransform>(out var parentRectTransform)) parentRectTransform = transform.parent.GetComponentInParent<RectTransform>();
             if (parentRectTransform == null)
             {
-                DebugExtension.Log("Parent RectTransform not found!!!", Color.red);
+                Debug.Log("<color=red>Parent RectTransform not found!!!</color>");
                 return;
             }
 
@@ -66,7 +66,7 @@ namespace ThanhDV.Utilities.UIAdaptation
                 await Task.Yield();
             }
 
-            if (!isSetupComplete) DebugExtension.Log("Background was not setup!", Color.yellow);
+            if (!isSetupComplete) Debug.Log("<color=red>Background was not setup!</color>");
             return GetComponent<RectTransform>().sizeDelta;
         }
     }

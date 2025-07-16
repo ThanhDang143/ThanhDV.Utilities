@@ -1,64 +1,166 @@
 using System;
 using System.Collections.Concurrent;
-using ThanhDV.Utilities.DebugExtensions;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace ThanhDV.Utilities.EventDispatcher
+public class EventDispatcher
 {
-    public class EventDispatcher
+    #region Singleton
+    private static EventDispatcher _instance;
+    private static readonly object _lock = new object();
+
+    public static EventDispatcher Instance
     {
-        public delegate void Delegator(object data);
-
-        private static readonly ConcurrentDictionary<string, Delegator> _maps = new ConcurrentDictionary<string, Delegator>();
-
-        public EventDispatcher() { }
-
-        /// <summary>
-        /// Registers a delegate to a specific subject.
-        /// </summary>
-        public static void Subscribe(string subject, Delegator delegator)
+        get
         {
-            if (delegator == null) return;
-
-            _maps.AddOrUpdate(subject, delegator, (key, existing) => existing + delegator);
-        }
-
-        /// <summary>
-        /// Unregisters a delegate from a specific subject.
-        /// </summary>
-        public static void Unsubscribe(string subject, Delegator delegator)
-        {
-            if (delegator == null || !_maps.ContainsKey(subject)) return;
-
-            _maps.AddOrUpdate(subject, (Delegator)null, (key, existing) =>
+            lock (_lock)
             {
-                existing -= delegator;
-                return existing == null ? null : existing;
-            });
-
-            // Remove the subject if no delegates are left
-            if (_maps.TryGetValue(subject, out var remaining) && remaining == null)
-            {
-                _maps.TryRemove(subject, out _);
-            }
-        }
-
-        /// <summary>
-        /// Posts an event to all delegates registered under the specified subject.
-        /// </summary>
-        public static void Post(string subject, object data = null)
-        {
-            if (_maps.TryGetValue(subject, out var map) && map != null)
-            {
-                try
+                if (_instance == null)
                 {
-                    map.Invoke(data);
+                    _instance = new EventDispatcher();
+
+                    Debug.Log($"<color=red>{_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
                 }
-                catch (Exception e)
-                {
-                    DebugExtension.Log(e.Message, Color.red);
-                }
+                return _instance;
             }
         }
     }
+
+    public static bool IsExist => _instance != null;
+    #endregion
+
+    // Cache key with event has no data
+    private static readonly ConcurrentDictionary<Type, string> _noDataKeys = new ConcurrentDictionary<Type, string>();
+    private readonly Dictionary<object, Delegate> _delegates = new Dictionary<object, Delegate>();
+
+    #region Event With Data
+    /// <summary>
+    /// Registers a listener for an event of type T.
+    /// </summary>
+    /// <param name="delegator">The handler to be called when the event occurs.</param>
+    /// <typeparam name="T">The type of the event parameter.</typeparam>
+    public void Register<T>(Action<T> delegator)
+    {
+        var type = typeof(T);
+        if (_delegates.TryGetValue(type, out var existingDelegate))
+        {
+            _delegates[type] = (Action<T>)existingDelegate + delegator;
+        }
+        else
+        {
+            _delegates[type] = delegator;
+        }
+    }
+
+    /// <summary>
+    /// Unregisters a listener from an event of type T.
+    /// </summary>
+    /// <param name="delegator">The handler that was previously registered.</param>
+    /// <typeparam name="T">The type of the event parameter.</typeparam>
+    public void Unregister<T>(Action<T> delegator)
+    {
+        var type = typeof(T);
+        if (_delegates.TryGetValue(type, out var existingDelegate))
+        {
+            var newDelegate = (Action<T>)existingDelegate - delegator;
+            if (newDelegate == null)
+            {
+                _delegates.Remove(type);
+            }
+            else
+            {
+                _delegates[type] = newDelegate;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Posts an event to all registered listeners.
+    /// </summary>
+    /// <param name="eventData">The event data.</param>
+    /// <typeparam name="T">The type of the event parameter.</typeparam>
+    public void Post<T>(T eventData)
+    {
+        var type = typeof(T);
+        if (_delegates.TryGetValue(type, out var existingDelegate))
+        {
+            try
+            {
+                (existingDelegate as Action<T>)?.Invoke(eventData);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+    }
+    #endregion
+
+    #region Event Without Data
+    /// <summary>
+    /// Registers a listener for an event without data.
+    /// </summary>
+    /// <param name="delegator">The handler to be called when the event occurs.</param>
+    /// <typeparam name="T">The type used as event identifier.</typeparam>
+    public void Register<T>(Action delegator)
+    {
+        var type = typeof(T);
+        var key = _noDataKeys.GetOrAdd(type, t => $"{t.FullName}_NoData"); // Cache key
+
+        if (_delegates.TryGetValue(key, out var existingDelegate))
+        {
+            _delegates[key] = (Action)existingDelegate + delegator;
+        }
+        else
+        {
+            _delegates[key] = delegator;
+        }
+    }
+
+    /// <summary>
+    /// Unregisters a listener from an event without data.
+    /// </summary>
+    /// <param name="delegator">The handler that was previously registered.</param>
+    /// <typeparam name="T">The type used as event identifier.</typeparam>
+    public void Unregister<T>(Action delegator)
+    {
+        var type = typeof(T);
+        var key = _noDataKeys.GetOrAdd(type, t => $"{t.FullName}_NoData"); // Cache key
+
+        if (_delegates.TryGetValue(key, out var existingDelegate))
+        {
+            var newDelegate = (Action)existingDelegate - delegator;
+            if (newDelegate == null)
+            {
+                _delegates.Remove(key);
+            }
+            else
+            {
+                _delegates[key] = newDelegate;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Posts an event without data to all registered listeners.
+    /// </summary>
+    /// <typeparam name="T">The type used as event identifier.</typeparam>
+    public void Post<T>()
+    {
+        var type = typeof(T);
+        var key = _noDataKeys.GetOrAdd(type, t => $"{t.FullName}_NoData"); // Cache key
+
+        if (_delegates.TryGetValue(key, out var existingDelegate))
+        {
+            try
+            {
+                (existingDelegate as Action)?.Invoke();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+    }
+    #endregion
 }

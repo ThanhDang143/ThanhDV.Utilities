@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.0.19] - 2025-07-16
+### Update
+#### EventDispatcher
+- Optimize for readable, performance, debugable
+### Update
+#### DebugExtention
+- Remove `DebugExtention.Log()`
+
 ## [0.0.18] - 2025-06-17
 ### Add
 #### SceneSwitcher

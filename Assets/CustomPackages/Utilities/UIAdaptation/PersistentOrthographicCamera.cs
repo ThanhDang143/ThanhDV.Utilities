@@ -22,7 +22,7 @@ namespace ThanhDV.Utilities.UIAdaptation
         {
             if (mainCamera == null)
             {
-                DebugExtension.Log("Main camera is null, trying to find the main camera...", Color.yellow);
+                Debug.Log("<color=red>Main camera is null, trying to find the main camera...</color>");
                 mainCamera = Camera.main;
             }
 
