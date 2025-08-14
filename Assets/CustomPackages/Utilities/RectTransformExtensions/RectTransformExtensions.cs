@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace ThanhDV.Utilities.RectTransformExtensions
+namespace ThanhDV.Utilities
 {
     public enum AnchorPresets
     {
@@ -43,7 +43,7 @@ namespace ThanhDV.Utilities.RectTransformExtensions
         BottomRight,
     }
 
-    public static class RectTransformExtensions
+    public static class RectTransformExt
     {
         public static void SetAnchor(this RectTransform source, AnchorPresets allign, int offsetX = 0, int offsetY = 0)
         {
@@ -51,102 +51,102 @@ namespace ThanhDV.Utilities.RectTransformExtensions
 
             switch (allign)
             {
-                case (AnchorPresets.TopLeft):
+                case AnchorPresets.TopLeft:
                     {
                         source.anchorMin = new Vector2(0, 1);
                         source.anchorMax = new Vector2(0, 1);
                         break;
                     }
-                case (AnchorPresets.TopCenter):
+                case AnchorPresets.TopCenter:
                     {
                         source.anchorMin = new Vector2(0.5f, 1);
                         source.anchorMax = new Vector2(0.5f, 1);
                         break;
                     }
-                case (AnchorPresets.TopRight):
+                case AnchorPresets.TopRight:
                     {
                         source.anchorMin = new Vector2(1, 1);
                         source.anchorMax = new Vector2(1, 1);
                         break;
                     }
 
-                case (AnchorPresets.MiddleLeft):
+                case AnchorPresets.MiddleLeft:
                     {
                         source.anchorMin = new Vector2(0, 0.5f);
                         source.anchorMax = new Vector2(0, 0.5f);
                         break;
                     }
-                case (AnchorPresets.MiddleCenter):
+                case AnchorPresets.MiddleCenter:
                     {
                         source.anchorMin = new Vector2(0.5f, 0.5f);
                         source.anchorMax = new Vector2(0.5f, 0.5f);
                         break;
                     }
-                case (AnchorPresets.MiddleRight):
+                case AnchorPresets.MiddleRight:
                     {
                         source.anchorMin = new Vector2(1, 0.5f);
                         source.anchorMax = new Vector2(1, 0.5f);
                         break;
                     }
 
-                case (AnchorPresets.BottomLeft):
+                case AnchorPresets.BottomLeft:
                     {
                         source.anchorMin = new Vector2(0, 0);
                         source.anchorMax = new Vector2(0, 0);
                         break;
                     }
-                case (AnchorPresets.BottonCenter):
+                case AnchorPresets.BottonCenter:
                     {
                         source.anchorMin = new Vector2(0.5f, 0);
                         source.anchorMax = new Vector2(0.5f, 0);
                         break;
                     }
-                case (AnchorPresets.BottomRight):
+                case AnchorPresets.BottomRight:
                     {
                         source.anchorMin = new Vector2(1, 0);
                         source.anchorMax = new Vector2(1, 0);
                         break;
                     }
 
-                case (AnchorPresets.HorStretchTop):
+                case AnchorPresets.HorStretchTop:
                     {
                         source.anchorMin = new Vector2(0, 1);
                         source.anchorMax = new Vector2(1, 1);
                         break;
                     }
-                case (AnchorPresets.HorStretchMiddle):
+                case AnchorPresets.HorStretchMiddle:
                     {
                         source.anchorMin = new Vector2(0, 0.5f);
                         source.anchorMax = new Vector2(1, 0.5f);
                         break;
                     }
-                case (AnchorPresets.HorStretchBottom):
+                case AnchorPresets.HorStretchBottom:
                     {
                         source.anchorMin = new Vector2(0, 0);
                         source.anchorMax = new Vector2(1, 0);
                         break;
                     }
 
-                case (AnchorPresets.VertStretchLeft):
+                case AnchorPresets.VertStretchLeft:
                     {
                         source.anchorMin = new Vector2(0, 0);
                         source.anchorMax = new Vector2(0, 1);
                         break;
                     }
-                case (AnchorPresets.VertStretchCenter):
+                case AnchorPresets.VertStretchCenter:
                     {
                         source.anchorMin = new Vector2(0.5f, 0);
                         source.anchorMax = new Vector2(0.5f, 1);
                         break;
                     }
-                case (AnchorPresets.VertStretchRight):
+                case AnchorPresets.VertStretchRight:
                     {
                         source.anchorMin = new Vector2(1, 0);
                         source.anchorMax = new Vector2(1, 1);
                         break;
                     }
 
-                case (AnchorPresets.StretchAll):
+                case AnchorPresets.StretchAll:
                     {
                         source.anchorMin = new Vector2(0, 0);
                         source.anchorMax = new Vector2(1, 1);
@@ -160,49 +160,49 @@ namespace ThanhDV.Utilities.RectTransformExtensions
 
             switch (preset)
             {
-                case (PivotPresets.TopLeft):
+                case PivotPresets.TopLeft:
                     {
                         source.pivot = new Vector2(0, 1);
                         break;
                     }
-                case (PivotPresets.TopCenter):
+                case PivotPresets.TopCenter:
                     {
                         source.pivot = new Vector2(0.5f, 1);
                         break;
                     }
-                case (PivotPresets.TopRight):
+                case PivotPresets.TopRight:
                     {
                         source.pivot = new Vector2(1, 1);
                         break;
                     }
 
-                case (PivotPresets.MiddleLeft):
+                case PivotPresets.MiddleLeft:
                     {
                         source.pivot = new Vector2(0, 0.5f);
                         break;
                     }
-                case (PivotPresets.MiddleCenter):
+                case PivotPresets.MiddleCenter:
                     {
                         source.pivot = new Vector2(0.5f, 0.5f);
                         break;
                     }
-                case (PivotPresets.MiddleRight):
+                case PivotPresets.MiddleRight:
                     {
                         source.pivot = new Vector2(1, 0.5f);
                         break;
                     }
 
-                case (PivotPresets.BottomLeft):
+                case PivotPresets.BottomLeft:
                     {
                         source.pivot = new Vector2(0, 0);
                         break;
                     }
-                case (PivotPresets.BottomCenter):
+                case PivotPresets.BottomCenter:
                     {
                         source.pivot = new Vector2(0.5f, 0);
                         break;
                     }
-                case (PivotPresets.BottomRight):
+                case PivotPresets.BottomRight:
                     {
                         source.pivot = new Vector2(1, 0);
                         break;

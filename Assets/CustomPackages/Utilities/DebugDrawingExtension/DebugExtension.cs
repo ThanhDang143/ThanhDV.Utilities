@@ -8,12 +8,10 @@ using System.Reflection;
 /// 	- Includes gizmo drawing methods for less memory-intensive debug visualization.
 /// </summary>
 
-namespace ThanhDV.Utilities.DebugExtensions
+namespace ThanhDV.Utilities
 {
-	public static class DebugExtension
+	public static class DebugExt
 	{
-		#region DebugDrawFunctions
-
 		/// <summary>
 		/// 	- Debugs a point.
 		/// </summary>
@@ -32,7 +30,7 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not this point should be faded when behind other objects.
 		/// </param>
-		public static void DebugPoint(Vector3 position, Color color, float scale = 1.0f, float duration = 0, bool depthTest = true)
+		public static void DrawPoint(Vector3 position, Color color, float scale = 1.0f, float duration = 0, bool depthTest = true)
 		{
 			color = (color == default(Color)) ? Color.white : color;
 
@@ -56,9 +54,9 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not this point should be faded when behind other objects.
 		/// </param>
-		public static void DebugPoint(Vector3 position, float scale = 1.0f, float duration = 0, bool depthTest = true)
+		public static void DrawPoint(Vector3 position, float scale = 1.0f, float duration = 0, bool depthTest = true)
 		{
-			DebugPoint(position, Color.white, scale, duration, depthTest);
+			DrawPoint(position, Color.white, scale, duration, depthTest);
 		}
 
 		/// <summary>
@@ -76,7 +74,7 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the bounds should be faded when behind other objects.
 		/// </param>
-		public static void DebugBounds(Bounds bounds, Color color, float duration = 0, bool depthTest = true)
+		public static void DrawBounds(Bounds bounds, Color color, float duration = 0, bool depthTest = true)
 		{
 			Vector3 center = bounds.center;
 
@@ -122,9 +120,9 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the bounds should be faded when behind other objects.
 		/// </param>
-		public static void DebugBounds(Bounds bounds, float duration = 0, bool depthTest = true)
+		public static void DrawBounds(Bounds bounds, float duration = 0, bool depthTest = true)
 		{
-			DebugBounds(bounds, Color.white, duration, depthTest);
+			DrawBounds(bounds, Color.white, duration, depthTest);
 		}
 
 		/// <summary>
@@ -148,7 +146,7 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the cube should be faded when behind other objects.
 		/// </param>
-		public static void DebugLocalCube(Transform transform, Vector3 size, Color color, Vector3 center = default(Vector3), float duration = 0, bool depthTest = true)
+		public static void DrawLocalCube(Transform transform, Vector3 size, Color color, Vector3 center = default(Vector3), float duration = 0, bool depthTest = true)
 		{
 			Vector3 lbb = transform.TransformPoint(center + ((-size) * 0.5f));
 			Vector3 rbb = transform.TransformPoint(center + (new Vector3(size.x, -size.y, -size.z) * 0.5f));
@@ -196,9 +194,9 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the cube should be faded when behind other objects.
 		/// </param>
-		public static void DebugLocalCube(Transform transform, Vector3 size, Vector3 center = default(Vector3), float duration = 0, bool depthTest = true)
+		public static void DrawLocalCube(Transform transform, Vector3 size, Vector3 center = default(Vector3), float duration = 0, bool depthTest = true)
 		{
-			DebugLocalCube(transform, size, Color.white, center, duration, depthTest);
+			DrawLocalCube(transform, size, Color.white, center, duration, depthTest);
 		}
 
 		/// <summary>
@@ -222,7 +220,7 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the cube should be faded when behind other objects.
 		/// </param>
-		public static void DebugLocalCube(Matrix4x4 space, Vector3 size, Color color, Vector3 center = default(Vector3), float duration = 0, bool depthTest = true)
+		public static void DrawLocalCube(Matrix4x4 space, Vector3 size, Color color, Vector3 center = default(Vector3), float duration = 0, bool depthTest = true)
 		{
 			color = (color == default(Color)) ? Color.white : color;
 
@@ -272,9 +270,9 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the cube should be faded when behind other objects.
 		/// </param>
-		public static void DebugLocalCube(Matrix4x4 space, Vector3 size, Vector3 center = default(Vector3), float duration = 0, bool depthTest = true)
+		public static void DrawLocalCube(Matrix4x4 space, Vector3 size, Vector3 center = default(Vector3), float duration = 0, bool depthTest = true)
 		{
-			DebugLocalCube(space, size, Color.white, center, duration, depthTest);
+			DrawLocalCube(space, size, Color.white, center, duration, depthTest);
 		}
 
 		/// <summary>
@@ -298,7 +296,7 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the circle should be faded when behind other objects.
 		/// </param>
-		public static void DebugCircle(Vector3 position, Vector3 up, Color color, float radius = 1.0f, float duration = 0, bool depthTest = true)
+		public static void DrawCircle(Vector3 position, Vector3 up, Color color, float radius = 1.0f, float duration = 0, bool depthTest = true)
 		{
 			Vector3 _up = up.normalized * radius;
 			Vector3 _forward = Vector3.Slerp(_up, -_up, 0.5f);
@@ -354,9 +352,9 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the circle should be faded when behind other objects.
 		/// </param>
-		public static void DebugCircle(Vector3 position, Color color, float radius = 1.0f, float duration = 0, bool depthTest = true)
+		public static void DrawCircle(Vector3 position, Color color, float radius = 1.0f, float duration = 0, bool depthTest = true)
 		{
-			DebugCircle(position, Vector3.up, color, radius, duration, depthTest);
+			DrawCircle(position, Vector3.up, color, radius, duration, depthTest);
 		}
 
 		/// <summary>
@@ -377,9 +375,9 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the circle should be faded when behind other objects.
 		/// </param>
-		public static void DebugCircle(Vector3 position, Vector3 up, float radius = 1.0f, float duration = 0, bool depthTest = true)
+		public static void DrawCircle(Vector3 position, Vector3 up, float radius = 1.0f, float duration = 0, bool depthTest = true)
 		{
-			DebugCircle(position, up, Color.white, radius, duration, depthTest);
+			DrawCircle(position, up, Color.white, radius, duration, depthTest);
 		}
 
 		/// <summary>
@@ -397,9 +395,9 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the circle should be faded when behind other objects.
 		/// </param>
-		public static void DebugCircle(Vector3 position, float radius = 1.0f, float duration = 0, bool depthTest = true)
+		public static void DrawCircle(Vector3 position, float radius = 1.0f, float duration = 0, bool depthTest = true)
 		{
-			DebugCircle(position, Vector3.up, Color.white, radius, duration, depthTest);
+			DrawCircle(position, Vector3.up, Color.white, radius, duration, depthTest);
 		}
 
 		/// <summary>
@@ -420,7 +418,7 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the sphere should be faded when behind other objects.
 		/// </param>
-		public static void DebugWireSphere(Vector3 position, Color color, float radius = 1.0f, float duration = 0, bool depthTest = true)
+		public static void DrawWireSphere(Vector3 position, Color color, float radius = 1.0f, float duration = 0, bool depthTest = true)
 		{
 			float angle = 10.0f;
 
@@ -464,9 +462,9 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the sphere should be faded when behind other objects.
 		/// </param>
-		public static void DebugWireSphere(Vector3 position, float radius = 1.0f, float duration = 0, bool depthTest = true)
+		public static void DrawWireSphere(Vector3 position, float radius = 1.0f, float duration = 0, bool depthTest = true)
 		{
-			DebugWireSphere(position, Color.white, radius, duration, depthTest);
+			DrawWireSphere(position, Color.white, radius, duration, depthTest);
 		}
 
 		/// <summary>
@@ -490,16 +488,16 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the cylinder should be faded when behind other objects.
 		/// </param>
-		public static void DebugCylinder(Vector3 start, Vector3 end, Color color, float radius = 1, float duration = 0, bool depthTest = true)
+		public static void DrawCylinder(Vector3 start, Vector3 end, Color color, float radius = 1, float duration = 0, bool depthTest = true)
 		{
 			Vector3 up = (end - start).normalized * radius;
 			Vector3 forward = Vector3.Slerp(up, -up, 0.5f);
 			Vector3 right = Vector3.Cross(up, forward).normalized * radius;
 
 			//Radial circles
-			DebugExtension.DebugCircle(start, up, color, radius, duration, depthTest);
-			DebugExtension.DebugCircle(end, -up, color, radius, duration, depthTest);
-			DebugExtension.DebugCircle((start + end) * 0.5f, up, color, radius, duration, depthTest);
+			DrawCircle(start, up, color, radius, duration, depthTest);
+			DrawCircle(end, -up, color, radius, duration, depthTest);
+			DrawCircle((start + end) * 0.5f, up, color, radius, duration, depthTest);
 
 			//Side lines
 			Debug.DrawLine(start + right, end + right, color, duration, depthTest);
@@ -535,9 +533,9 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the cylinder should be faded when behind other objects.
 		/// </param>
-		public static void DebugCylinder(Vector3 start, Vector3 end, float radius = 1, float duration = 0, bool depthTest = true)
+		public static void DrawCylinder(Vector3 start, Vector3 end, float radius = 1, float duration = 0, bool depthTest = true)
 		{
-			DebugCylinder(start, end, Color.white, radius, duration, depthTest);
+			DrawCylinder(start, end, Color.white, radius, duration, depthTest);
 		}
 
 		/// <summary>
@@ -561,7 +559,7 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the cone should be faded when behind other objects.
 		/// </param>
-		public static void DebugCone(Vector3 position, Vector3 direction, Color color, float angle = 45, float duration = 0, bool depthTest = true)
+		public static void DrawCone(Vector3 position, Vector3 direction, Color color, float angle = 45, float duration = 0, bool depthTest = true)
 		{
 			float length = direction.magnitude;
 
@@ -584,8 +582,8 @@ namespace ThanhDV.Utilities.DebugExtensions
 			Debug.DrawRay(position, Vector3.Slerp(_forward, _right, angle / 90.0f).normalized * dist, color, duration, depthTest);
 			Debug.DrawRay(position, Vector3.Slerp(_forward, -_right, angle / 90.0f).normalized * dist, color, duration, depthTest);
 
-			DebugExtension.DebugCircle(position + _forward, direction, color, (_forward - (slerpedVector.normalized * dist)).magnitude, duration, depthTest);
-			DebugExtension.DebugCircle(position + (_forward * 0.5f), direction, color, ((_forward * 0.5f) - (slerpedVector.normalized * (dist * 0.5f))).magnitude, duration, depthTest);
+			DrawCircle(position + _forward, direction, color, (_forward - (slerpedVector.normalized * dist)).magnitude, duration, depthTest);
+			DrawCircle(position + (_forward * 0.5f), direction, color, ((_forward * 0.5f) - (slerpedVector.normalized * (dist * 0.5f))).magnitude, duration, depthTest);
 		}
 
 		/// <summary>
@@ -606,9 +604,9 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the cone should be faded when behind other objects.
 		/// </param>
-		public static void DebugCone(Vector3 position, Vector3 direction, float angle = 45, float duration = 0, bool depthTest = true)
+		public static void DrawCone(Vector3 position, Vector3 direction, float angle = 45, float duration = 0, bool depthTest = true)
 		{
-			DebugCone(position, direction, Color.white, angle, duration, depthTest);
+			DrawCone(position, direction, Color.white, angle, duration, depthTest);
 		}
 
 		/// <summary>
@@ -629,9 +627,9 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the cone should be faded when behind other objects.
 		/// </param>
-		public static void DebugCone(Vector3 position, Color color, float angle = 45, float duration = 0, bool depthTest = true)
+		public static void DrawCone(Vector3 position, Color color, float angle = 45, float duration = 0, bool depthTest = true)
 		{
-			DebugCone(position, Vector3.up, color, angle, duration, depthTest);
+			DrawCone(position, Vector3.up, color, angle, duration, depthTest);
 		}
 
 		/// <summary>
@@ -649,9 +647,9 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the cone should be faded when behind other objects.
 		/// </param>
-		public static void DebugCone(Vector3 position, float angle = 45, float duration = 0, bool depthTest = true)
+		public static void DrawCone(Vector3 position, float angle = 45, float duration = 0, bool depthTest = true)
 		{
-			DebugCone(position, Vector3.up, Color.white, angle, duration, depthTest);
+			DrawCone(position, Vector3.up, Color.white, angle, duration, depthTest);
 		}
 
 		/// <summary>
@@ -672,10 +670,10 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the arrow should be faded when behind other objects. 
 		/// </param>
-		public static void DebugArrow(Vector3 position, Vector3 direction, Color color, float duration = 0, bool depthTest = true)
+		public static void DrawArrow(Vector3 position, Vector3 direction, Color color, float duration = 0, bool depthTest = true)
 		{
 			Debug.DrawRay(position, direction, color, duration, depthTest);
-			DebugExtension.DebugCone(position + direction, -direction * 0.333f, color, 15, duration, depthTest);
+			DrawCone(position + direction, -direction * 0.333f, color, 15, duration, depthTest);
 		}
 
 		/// <summary>
@@ -693,9 +691,9 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the arrow should be faded when behind other objects. 
 		/// </param>
-		public static void DebugArrow(Vector3 position, Vector3 direction, float duration = 0, bool depthTest = true)
+		public static void DrawArrow(Vector3 position, Vector3 direction, float duration = 0, bool depthTest = true)
 		{
-			DebugArrow(position, direction, Color.white, duration, depthTest);
+			DrawArrow(position, direction, Color.white, duration, depthTest);
 		}
 
 		/// <summary>
@@ -719,7 +717,7 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the capsule should be faded when behind other objects.
 		/// </param>
-		public static void DebugCapsule(Vector3 start, Vector3 end, Color color, float radius = 1, float duration = 0, bool depthTest = true)
+		public static void DrawCapsule(Vector3 start, Vector3 end, Color color, float radius = 1, float duration = 0, bool depthTest = true)
 		{
 			Vector3 up = (end - start).normalized * radius;
 			Vector3 forward = Vector3.Slerp(up, -up, 0.5f);
@@ -733,8 +731,8 @@ namespace ThanhDV.Utilities.DebugExtensions
 			end = middle + ((end - middle).normalized * sideLength);
 
 			//Radial circles
-			DebugExtension.DebugCircle(start, up, color, radius, duration, depthTest);
-			DebugExtension.DebugCircle(end, -up, color, radius, duration, depthTest);
+			DrawCircle(start, up, color, radius, duration, depthTest);
+			DrawCircle(end, -up, color, radius, duration, depthTest);
 
 			//Side lines
 			Debug.DrawLine(start + right, end + right, color, duration, depthTest);
@@ -778,15 +776,14 @@ namespace ThanhDV.Utilities.DebugExtensions
 		/// <param name='depthTest'>
 		/// 	- Whether or not the capsule should be faded when behind other objects.
 		/// </param>
-		public static void DebugCapsule(Vector3 start, Vector3 end, float radius = 1, float duration = 0, bool depthTest = true)
+		public static void DrawCapsule(Vector3 start, Vector3 end, float radius = 1, float duration = 0, bool depthTest = true)
 		{
-			DebugCapsule(start, end, Color.white, radius, duration, depthTest);
+			DrawCapsule(start, end, Color.white, radius, duration, depthTest);
 		}
+	}
 
-		#endregion
-
-		#region GizmoDrawFunctions
-
+	public static class GizmosExt
+	{
 		/// <summary>
 		/// 	- Draws a point.
 		/// </summary>
@@ -1146,9 +1143,9 @@ namespace ThanhDV.Utilities.DebugExtensions
 			Vector3 right = Vector3.Cross(up, forward).normalized * radius;
 
 			//Radial circles
-			DebugExtension.DrawCircle(start, up, color, radius);
-			DebugExtension.DrawCircle(end, -up, color, radius);
-			DebugExtension.DrawCircle((start + end) * 0.5f, up, color, radius);
+			DebugExt.DrawCircle(start, up, color, radius);
+			DebugExt.DrawCircle(end, -up, color, radius);
+			DebugExt.DrawCircle((start + end) * 0.5f, up, color, radius);
 
 			Color oldColor = Gizmos.color;
 			Gizmos.color = color;
@@ -1229,8 +1226,8 @@ namespace ThanhDV.Utilities.DebugExtensions
 			Gizmos.DrawRay(position, Vector3.Slerp(_forward, _right, angle / 90.0f).normalized * dist);
 			Gizmos.DrawRay(position, Vector3.Slerp(_forward, -_right, angle / 90.0f).normalized * dist);
 
-			DebugExtension.DrawCircle(position + _forward, direction, color, (_forward - (slerpedVector.normalized * dist)).magnitude);
-			DebugExtension.DrawCircle(position + (_forward * 0.5f), direction, color, ((_forward * 0.5f) - (slerpedVector.normalized * (dist * 0.5f))).magnitude);
+			DebugExt.DrawCircle(position + _forward, direction, color, (_forward - (slerpedVector.normalized * dist)).magnitude);
+			DebugExt.DrawCircle(position + (_forward * 0.5f), direction, color, ((_forward * 0.5f) - (slerpedVector.normalized * (dist * 0.5f))).magnitude);
 
 			Gizmos.color = oldColor;
 		}
@@ -1301,7 +1298,7 @@ namespace ThanhDV.Utilities.DebugExtensions
 			Gizmos.color = color;
 
 			Gizmos.DrawRay(position, direction);
-			DebugExtension.DrawCone(position + direction, -direction * 0.333f, color, 15);
+			DebugExt.DrawCone(position + direction, -direction * 0.333f, color, 15);
 
 			Gizmos.color = oldColor;
 		}
@@ -1352,8 +1349,8 @@ namespace ThanhDV.Utilities.DebugExtensions
 			end = middle + ((end - middle).normalized * sideLength);
 
 			//Radial circles
-			DebugExtension.DrawCircle(start, up, color, radius);
-			DebugExtension.DrawCircle(end, -up, color, radius);
+			DebugExt.DrawCircle(start, up, color, radius);
+			DebugExt.DrawCircle(end, -up, color, radius);
 
 			//Side lines
 			Gizmos.DrawLine(start + right, end + right);
@@ -1397,11 +1394,10 @@ namespace ThanhDV.Utilities.DebugExtensions
 		{
 			DrawCapsule(start, end, Color.white, radius);
 		}
+	}
 
-		#endregion
-
-		#region DebugFunctions
-
+	public static class MethodsDebug
+	{
 		/// <summary>
 		/// 	- Gets the methods of an object.
 		/// </summary>
@@ -1463,9 +1459,7 @@ namespace ThanhDV.Utilities.DebugExtensions
 				}
 			}
 
-			return (methods);
+			return methods;
 		}
-
-		#endregion
 	}
 }

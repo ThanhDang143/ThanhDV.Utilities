@@ -1,7 +1,4 @@
-using System.Linq;
 using System.Threading.Tasks;
-using ThanhDV.Utilities.DebugExtensions;
-using ThanhDV.Utilities.RectTransformExtensions;
 using UnityEngine;
 using UnityEngine.UI;
 

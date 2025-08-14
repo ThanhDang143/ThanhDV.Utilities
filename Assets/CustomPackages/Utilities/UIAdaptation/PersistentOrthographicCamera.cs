@@ -1,4 +1,3 @@
-using ThanhDV.Utilities.DebugExtensions;
 using UnityEngine;
 
 namespace ThanhDV.Utilities.UIAdaptation
@@ -14,25 +13,32 @@ namespace ThanhDV.Utilities.UIAdaptation
         {
             if (activateOnAwake)
             {
-                ResizeCamera();
+                ResizeCamera(out _);
             }
         }
 
-        private void ResizeCamera()
+        public void ResizeCamera(out float _orthographicSize)
         {
             if (mainCamera == null)
             {
-                Debug.Log("<color=red>Main camera is null, trying to find the main camera...</color>");
+                Debug.Log("<color=red>Main camera is null!!! Trying to find the main camera...</color>");
                 mainCamera = Camera.main;
+            }
+
+            if (mainCamera == null)
+            {
+                Debug.Log("<color=red>Main camera is null!!! Can not find mainCamera!!!</color>");
+                _orthographicSize = -1f;
+                return;
             }
 
             float screenWidth = Screen.width;
             float screenHeight = Screen.height;
 
             float baseHorizontalSize = mainCamera.orthographicSize * referenceResolution.x / referenceResolution.y;
-            float size = baseHorizontalSize * screenHeight / screenWidth;
+            _orthographicSize = baseHorizontalSize * screenHeight / screenWidth;
 
-            mainCamera.orthographicSize = size;
+            mainCamera.orthographicSize = _orthographicSize;
         }
     }
 }

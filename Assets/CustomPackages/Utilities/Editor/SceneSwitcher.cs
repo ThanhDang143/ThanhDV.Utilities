@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
-namespace ThanhDV.Utilities.Editor
+namespace ThanhDV.Utilities
 {
     [InitializeOnLoad]
     public static class SceneSwitcher

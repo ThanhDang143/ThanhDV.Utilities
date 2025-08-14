@@ -1,7 +1,6 @@
 using UnityEngine;
-using ThanhDV.Utilities.DebugExtensions;
 
-namespace ThanhDV.Utilities.Singleton
+namespace ThanhDV.Utilities
 {
     public class Singleton<T> where T : class, new()
     {
@@ -18,7 +17,7 @@ namespace ThanhDV.Utilities.Singleton
                     {
                         _instance = new T();
 
-                        Debug.Log($"<color=red>{_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
+                        Debug.Log($"<color=yellow>{_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
                     }
                     return _instance;
                 }
@@ -48,7 +47,7 @@ namespace ThanhDV.Utilities.Singleton
                             _instance = new GameObject().AddComponent<T>();
                             _instance.gameObject.name = _instance.GetType().Name;
 
-                            Debug.Log($"<color=red>{_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
+                            Debug.Log($"<color=yellow>{_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
                         }
                     }
                     return _instance;
@@ -91,7 +90,7 @@ namespace ThanhDV.Utilities.Singleton
                             _instance = new GameObject().AddComponent<T>();
                             _instance.gameObject.name = _instance.GetType().Name;
 
-                            Debug.Log($"<color=red>{_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
+                            Debug.Log($"<color=yellow>{_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
                         }
                         DontDestroyOnLoad(_instance);
                     }

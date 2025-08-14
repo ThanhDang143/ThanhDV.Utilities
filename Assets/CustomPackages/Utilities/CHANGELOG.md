@@ -1,5 +1,8 @@
 # Changelog
 
+## [0.0.20] - 2025-08-14
+- Change namespace name, rename class name 
+
 ## [0.0.19] - 2025-07-16
 ### Update
 #### EventDispatcher
