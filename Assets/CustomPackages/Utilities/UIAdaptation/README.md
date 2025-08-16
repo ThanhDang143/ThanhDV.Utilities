@@ -1,9 +1,9 @@
 # UIAdaptation
 
-Auto scale UI to fit with screen resolution.
+Utility scripts to adapt UI & 2D camera to any screen ratio.
 
-## How to use
-- Add `UIBackground` to Image Background to auto fit
-- Add `UIScaler` into Canvas
-- Add `UISaveZone` to RectTransform need to resize.
-- Add `PersistentOrthographicCamera` to Orthographic Camera to keep camera horizon size.
+## Components
+- `UIScaler`: Configures CanvasScaler (ScaleWithScreenSize + auto match width/height).
+- `UIBackground`: Scales a background Image to fully cover while keeping sprite aspect.
+- `UISaveZone`: Sets anchors to the device Safe Area.
+- `PersistentOrthographicCamera`: Keeps constant horizontal world size for an orthographic Camera.

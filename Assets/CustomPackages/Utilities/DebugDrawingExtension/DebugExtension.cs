@@ -32,11 +32,13 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawPoint(Vector3 position, Color color, float scale = 1.0f, float duration = 0, bool depthTest = true)
 		{
+#if UNITY_EDITOR
 			color = (color == default(Color)) ? Color.white : color;
 
 			Debug.DrawRay(position + (Vector3.up * (scale * 0.5f)), -Vector3.up * scale, color, duration, depthTest);
 			Debug.DrawRay(position + (Vector3.right * (scale * 0.5f)), -Vector3.right * scale, color, duration, depthTest);
 			Debug.DrawRay(position + (Vector3.forward * (scale * 0.5f)), -Vector3.forward * scale, color, duration, depthTest);
+#endif
 		}
 
 		/// <summary>
@@ -76,6 +78,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawBounds(Bounds bounds, Color color, float duration = 0, bool depthTest = true)
 		{
+#if UNITY_EDITOR
 			Vector3 center = bounds.center;
 
 			float x = bounds.extents.x;
@@ -106,6 +109,7 @@ namespace ThanhDV.Utilities
 			Debug.DrawLine(rdf, rdb, color, duration, depthTest);
 			Debug.DrawLine(lfd, lbd, color, duration, depthTest);
 			Debug.DrawLine(lbd, rdb, color, duration, depthTest);
+#endif
 		}
 
 		/// <summary>
@@ -148,6 +152,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawLocalCube(Transform transform, Vector3 size, Color color, Vector3 center = default(Vector3), float duration = 0, bool depthTest = true)
 		{
+#if UNITY_EDITOR
 			Vector3 lbb = transform.TransformPoint(center + ((-size) * 0.5f));
 			Vector3 rbb = transform.TransformPoint(center + (new Vector3(size.x, -size.y, -size.z) * 0.5f));
 
@@ -174,6 +179,7 @@ namespace ThanhDV.Utilities
 			Debug.DrawLine(rbb, rub, color, duration, depthTest);
 			Debug.DrawLine(lbf, luf, color, duration, depthTest);
 			Debug.DrawLine(rbf, ruf, color, duration, depthTest);
+#endif
 		}
 
 		/// <summary>
@@ -222,6 +228,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawLocalCube(Matrix4x4 space, Vector3 size, Color color, Vector3 center = default(Vector3), float duration = 0, bool depthTest = true)
 		{
+#if UNITY_EDITOR
 			color = (color == default(Color)) ? Color.white : color;
 
 			Vector3 lbb = space.MultiplyPoint3x4(center + ((-size) * 0.5f));
@@ -250,6 +257,7 @@ namespace ThanhDV.Utilities
 			Debug.DrawLine(rbb, rub, color, duration, depthTest);
 			Debug.DrawLine(lbf, luf, color, duration, depthTest);
 			Debug.DrawLine(rbf, ruf, color, duration, depthTest);
+#endif
 		}
 
 		/// <summary>
@@ -298,6 +306,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawCircle(Vector3 position, Vector3 up, Color color, float radius = 1.0f, float duration = 0, bool depthTest = true)
 		{
+#if UNITY_EDITOR
 			Vector3 _up = up.normalized * radius;
 			Vector3 _forward = Vector3.Slerp(_up, -_up, 0.5f);
 			Vector3 _right = Vector3.Cross(_up, _forward).normalized * radius;
@@ -332,6 +341,7 @@ namespace ThanhDV.Utilities
 				Debug.DrawLine(_lastPoint, _nextPoint, color, duration, depthTest);
 				_lastPoint = _nextPoint;
 			}
+#endif
 		}
 
 		/// <summary>
@@ -420,6 +430,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawWireSphere(Vector3 position, Color color, float radius = 1.0f, float duration = 0, bool depthTest = true)
 		{
+#if UNITY_EDITOR
 			float angle = 10.0f;
 
 			Vector3 x = new Vector3(position.x, position.y + radius * Mathf.Sin(0), position.z + radius * Mathf.Cos(0));
@@ -445,6 +456,7 @@ namespace ThanhDV.Utilities
 				y = new_y;
 				z = new_z;
 			}
+#endif
 		}
 
 		/// <summary>
@@ -490,6 +502,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawCylinder(Vector3 start, Vector3 end, Color color, float radius = 1, float duration = 0, bool depthTest = true)
 		{
+#if UNITY_EDITOR
 			Vector3 up = (end - start).normalized * radius;
 			Vector3 forward = Vector3.Slerp(up, -up, 0.5f);
 			Vector3 right = Vector3.Cross(up, forward).normalized * radius;
@@ -513,6 +526,7 @@ namespace ThanhDV.Utilities
 			//End endcap
 			Debug.DrawLine(end - right, end + right, color, duration, depthTest);
 			Debug.DrawLine(end - forward, end + forward, color, duration, depthTest);
+#endif
 		}
 
 		/// <summary>
@@ -561,6 +575,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawCone(Vector3 position, Vector3 direction, Color color, float angle = 45, float duration = 0, bool depthTest = true)
 		{
+#if UNITY_EDITOR
 			float length = direction.magnitude;
 
 			Vector3 _forward = direction;
@@ -584,6 +599,7 @@ namespace ThanhDV.Utilities
 
 			DrawCircle(position + _forward, direction, color, (_forward - (slerpedVector.normalized * dist)).magnitude, duration, depthTest);
 			DrawCircle(position + (_forward * 0.5f), direction, color, ((_forward * 0.5f) - (slerpedVector.normalized * (dist * 0.5f))).magnitude, duration, depthTest);
+#endif
 		}
 
 		/// <summary>
@@ -672,8 +688,10 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawArrow(Vector3 position, Vector3 direction, Color color, float duration = 0, bool depthTest = true)
 		{
+#if UNITY_EDITOR
 			Debug.DrawRay(position, direction, color, duration, depthTest);
 			DrawCone(position + direction, -direction * 0.333f, color, 15, duration, depthTest);
+#endif
 		}
 
 		/// <summary>
@@ -719,6 +737,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawCapsule(Vector3 start, Vector3 end, Color color, float radius = 1, float duration = 0, bool depthTest = true)
 		{
+#if UNITY_EDITOR
 			Vector3 up = (end - start).normalized * radius;
 			Vector3 forward = Vector3.Slerp(up, -up, 0.5f);
 			Vector3 right = Vector3.Cross(up, forward).normalized * radius;
@@ -756,6 +775,7 @@ namespace ThanhDV.Utilities
 				Debug.DrawLine(Vector3.Slerp(forward, up, i / 25.0f) + end, Vector3.Slerp(forward, up, (i - 1) / 25.0f) + end, color, duration, depthTest);
 				Debug.DrawLine(Vector3.Slerp(-forward, up, i / 25.0f) + end, Vector3.Slerp(-forward, up, (i - 1) / 25.0f) + end, color, duration, depthTest);
 			}
+#endif
 		}
 
 		/// <summary>
@@ -798,6 +818,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawPoint(Vector3 position, Color color, float scale = 1.0f)
 		{
+#if UNITY_EDITOR
 			Color oldColor = Gizmos.color;
 
 			Gizmos.color = color;
@@ -806,6 +827,7 @@ namespace ThanhDV.Utilities
 			Gizmos.DrawRay(position + (Vector3.forward * (scale * 0.5f)), -Vector3.forward * scale);
 
 			Gizmos.color = oldColor;
+#endif
 		}
 
 		/// <summary>
@@ -833,6 +855,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawBounds(Bounds bounds, Color color)
 		{
+#if UNITY_EDITOR
 			Vector3 center = bounds.center;
 
 			float x = bounds.extents.x;
@@ -868,6 +891,7 @@ namespace ThanhDV.Utilities
 			Gizmos.DrawLine(lbd, rdb);
 
 			Gizmos.color = oldColor;
+#endif
 		}
 
 		/// <summary>
@@ -898,6 +922,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawLocalCube(Transform transform, Vector3 size, Color color, Vector3 center = default(Vector3))
 		{
+#if UNITY_EDITOR
 			Color oldColor = Gizmos.color;
 			Gizmos.color = color;
 
@@ -929,6 +954,7 @@ namespace ThanhDV.Utilities
 			Gizmos.DrawLine(rbf, ruf);
 
 			Gizmos.color = oldColor;
+#endif
 		}
 
 		/// <summary>
@@ -965,6 +991,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawLocalCube(Matrix4x4 space, Vector3 size, Color color, Vector3 center = default(Vector3))
 		{
+#if UNITY_EDITOR
 			Color oldColor = Gizmos.color;
 			Gizmos.color = color;
 
@@ -996,6 +1023,7 @@ namespace ThanhDV.Utilities
 			Gizmos.DrawLine(rbf, ruf);
 
 			Gizmos.color = oldColor;
+#endif
 		}
 
 		/// <summary>
@@ -1032,6 +1060,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawCircle(Vector3 position, Vector3 up, Color color, float radius = 1.0f)
 		{
+#if UNITY_EDITOR
 			up = ((up == Vector3.zero) ? Vector3.up : up).normalized * radius;
 			Vector3 _forward = Vector3.Slerp(up, -up, 0.5f);
 			Vector3 _right = Vector3.Cross(up, _forward).normalized * radius;
@@ -1054,12 +1083,12 @@ namespace ThanhDV.Utilities
 			Vector3 _nextPoint = Vector3.zero;
 
 			Color oldColor = Gizmos.color;
-			Gizmos.color = (color == default(Color)) ? Color.white : color;
+			Gizmos.color = (color == default) ? Color.white : color;
 
 			for (var i = 0; i < 91; i++)
 			{
-				_nextPoint.x = Mathf.Cos((i * 4) * Mathf.Deg2Rad);
-				_nextPoint.z = Mathf.Sin((i * 4) * Mathf.Deg2Rad);
+				_nextPoint.x = Mathf.Cos(i * 4 * Mathf.Deg2Rad);
+				_nextPoint.z = Mathf.Sin(i * 4 * Mathf.Deg2Rad);
 				_nextPoint.y = 0;
 
 				_nextPoint = position + matrix.MultiplyPoint3x4(_nextPoint);
@@ -1069,6 +1098,7 @@ namespace ThanhDV.Utilities
 			}
 
 			Gizmos.color = oldColor;
+#endif
 		}
 
 		/// <summary>
@@ -1138,6 +1168,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawCylinder(Vector3 start, Vector3 end, Color color, float radius = 1.0f)
 		{
+#if UNITY_EDITOR
 			Vector3 up = (end - start).normalized * radius;
 			Vector3 forward = Vector3.Slerp(up, -up, 0.5f);
 			Vector3 right = Vector3.Cross(up, forward).normalized * radius;
@@ -1166,6 +1197,7 @@ namespace ThanhDV.Utilities
 			Gizmos.DrawLine(end - forward, end + forward);
 
 			Gizmos.color = oldColor;
+#endif
 		}
 
 		/// <summary>
@@ -1202,6 +1234,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawCone(Vector3 position, Vector3 direction, Color color, float angle = 45)
 		{
+#if UNITY_EDITOR
 			float length = direction.magnitude;
 
 			Vector3 _forward = direction;
@@ -1230,6 +1263,7 @@ namespace ThanhDV.Utilities
 			DebugExt.DrawCircle(position + (_forward * 0.5f), direction, color, ((_forward * 0.5f) - (slerpedVector.normalized * (dist * 0.5f))).magnitude);
 
 			Gizmos.color = oldColor;
+#endif
 		}
 
 		/// <summary>
@@ -1294,6 +1328,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawArrow(Vector3 position, Vector3 direction, Color color)
 		{
+#if UNITY_EDITOR
 			Color oldColor = Gizmos.color;
 			Gizmos.color = color;
 
@@ -1301,6 +1336,7 @@ namespace ThanhDV.Utilities
 			DebugExt.DrawCone(position + direction, -direction * 0.333f, color, 15);
 
 			Gizmos.color = oldColor;
+#endif
 		}
 
 		/// <summary>
@@ -1334,6 +1370,7 @@ namespace ThanhDV.Utilities
 		/// </param>
 		public static void DrawCapsule(Vector3 start, Vector3 end, Color color, float radius = 1)
 		{
+#if UNITY_EDITOR
 			Vector3 up = (end - start).normalized * radius;
 			Vector3 forward = Vector3.Slerp(up, -up, 0.5f);
 			Vector3 right = Vector3.Cross(up, forward).normalized * radius;
@@ -1376,6 +1413,7 @@ namespace ThanhDV.Utilities
 			}
 
 			Gizmos.color = oldColor;
+#endif
 		}
 
 		/// <summary>
@@ -1427,7 +1465,7 @@ namespace ThanhDV.Utilities
 				}
 			}
 
-			return (methods);
+			return methods;
 		}
 
 		/// <summary>

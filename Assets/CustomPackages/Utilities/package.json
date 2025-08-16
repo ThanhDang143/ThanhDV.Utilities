@@ -1,6 +1,6 @@
 {
     "name": "thanhdv.utilities",
-    "version": "0.0.20",
+    "version": "0.0.21",
     "displayName": "ThanhDV's Utilities",
     "description": "This library contains some utilities for Unity development.",
     "unity": "2022.3",
@@ -11,7 +11,8 @@
         "EventDispatcher",
         "RectTransform",
         "DebugExtension",
-        "UIAdaptation"
+        "UIAdaptation",
+        "WeightedRandom"
     ],
     "author": {
         "name": "ThanhDV",
@@ -23,5 +24,6 @@
         "type": "git",
         "url": "git+https://github.com/ThanhDang143/ThanhDV.Utilities.git"
     },
-    "changelogUrl": "https://github.com/ThanhDang143/ThanhDV.Utilities/blob/main/Assets/CustomPackages/Utilities/CHANGELOG.md"
+    "changelogUrl": "https://github.com/ThanhDang143/ThanhDV.Utilities/blob/main/Assets/CustomPackages/Utilities/CHANGELOG.md",
+    "license": "MIT"
 }
