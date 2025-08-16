@@ -38,4 +38,4 @@ All notable changes to this project will be documented in this file.
 
 ## [0.0.14] - 2025-05-28
 ### Fixed
-- `EventDispatcher`: ArgumentNullException (addValueFactory at line
+- `EventDispatcher`: ArgumentNullException addValueFactory at line
