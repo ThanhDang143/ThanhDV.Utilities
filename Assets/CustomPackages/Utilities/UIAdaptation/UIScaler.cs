@@ -1,3 +1,4 @@
+using Unity.VisualScripting.YamlDotNet.Core.Events;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +8,7 @@ namespace ThanhDV.Utilities.UIAdaptation
     public class UIScaler : MonoBehaviour
     {
         [Space]
-        [SerializeField] private bool setupOnAwake = true;
+        [SerializeField] private CanvasScaler scaler;
 
         [Space]
         [SerializeField] private float baseWidth = 1080f;
@@ -15,25 +16,47 @@ namespace ThanhDV.Utilities.UIAdaptation
 
         private void Awake()
         {
-            if (setupOnAwake) Setup();
+            if (TryGetCanvasScaler())
+            {
+                Prepare();
+                Setup();
+            }
         }
 
-        public void Setup()
+        private void Setup()
         {
-            if (!TryGetComponent(out CanvasScaler scaler))
+            if (scaler == null)
             {
-                Debug.Log("<color=red>CanvasScaler not found!!!</color>");
+                Debug.Log("<color=red>[UIAdaptation] CanvasScaler not found!!!</color>");
+                return;
+            }
+
+            float referenceRatio = baseWidth / baseHeight;
+            float screenRatio = (float)Screen.width / Screen.height;
+
+            scaler.matchWidthOrHeight = (screenRatio > referenceRatio) ? 1f : 0f;
+        }
+
+        private void Prepare()
+        {
+            if (scaler == null)
+            {
+                Debug.Log("<color=red>[UIAdaptation] CanvasScaler not found!!!</color>");
                 return;
             }
 
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.referenceResolution = new Vector2(baseWidth, baseHeight);
+        }
 
-            float w = baseWidth / Screen.width;
-            float h = baseHeight / Screen.height;
-            float ratio = h / w;
-            ratio = ratio >= 1 ? 1 : 0;
-            scaler.matchWidthOrHeight = ratio;
+        private bool TryGetCanvasScaler()
+        {
+            if (scaler != null) return true;
+
+            TryGetComponent(out scaler);
+
+            return scaler != null;
         }
     }
 }

@@ -4,17 +4,19 @@ namespace ThanhDV.Utilities.UIAdaptation
 {
     public class UISaveZone : MonoBehaviour
     {
-        [Space]
-        [SerializeField] private bool isSetupOnAwake = true;
-
         private void Awake()
         {
-            if (isSetupOnAwake) Setup();
+            Setup();
         }
 
         public void Setup()
         {
-            RectTransform rectTransform = GetComponent<RectTransform>();
+            if (!TryGetComponent(out RectTransform rectTransform))
+            {
+                Debug.Log("<color=red>[UIAdaptation] RectTransform not found!!!</color>");
+                return;
+            }
+
             Rect saveZone = Screen.safeArea;
             Vector2 anchorMin = saveZone.position;
             Vector2 anchorMax = anchorMin + saveZone.size;
