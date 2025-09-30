@@ -35,8 +35,18 @@ namespace ThanhDV.Utilities.UIAdaptation
             float screenWidth = Screen.width;
             float screenHeight = Screen.height;
 
-            float baseHorizontalSize = mainCamera.orthographicSize * referenceResolution.x / referenceResolution.y;
-            _orthographicSize = baseHorizontalSize * screenHeight / screenWidth;
+            float screenRatio = screenWidth / screenHeight;
+            float referenceRatio = referenceResolution.x / referenceResolution.y;
+
+            if (screenRatio < referenceRatio)
+            {
+                float baseHorizontalSize = mainCamera.orthographicSize * referenceResolution.x / referenceResolution.y;
+                _orthographicSize = baseHorizontalSize * screenHeight / screenWidth;
+            }
+            else
+            {
+                _orthographicSize = mainCamera.orthographicSize;
+            }
 
             mainCamera.orthographicSize = _orthographicSize;
         }
