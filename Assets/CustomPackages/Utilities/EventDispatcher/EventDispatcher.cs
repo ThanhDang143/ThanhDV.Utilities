@@ -5,8 +5,34 @@ using UnityEngine;
 
 namespace ThanhDV.Utilities
 {
-    public class EventDispatcher : Singleton<EventDispatcher>
+    public class EventDispatcher
     {
+#if !INJECTION_ENABLED
+        #region Singleton 
+        private static EventDispatcher _instance;
+        private static readonly object _lock = new();
+
+        public static EventDispatcher Instance
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new EventDispatcher();
+
+                        Debug.Log($"<color=yellow>{_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
+                    }
+                    return _instance;
+                }
+            }
+        }
+
+        public static bool IsExist => _instance != null;
+        #endregion
+#endif
+
         // Cache key with event has no data
         private static readonly ConcurrentDictionary<Type, string> _noDataKeys = new ConcurrentDictionary<Type, string>();
         private readonly Dictionary<object, Delegate> _delegates = new Dictionary<object, Delegate>();
