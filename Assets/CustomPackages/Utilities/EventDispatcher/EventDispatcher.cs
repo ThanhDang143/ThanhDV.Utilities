@@ -22,7 +22,7 @@ namespace ThanhDV.Utilities
                     {
                         _instance = new EventDispatcher();
 
-                        Debug.Log($"<color=yellow>{_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
+                        Debug.Log($"<color=yellow>[EventDispatcher] {_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
                     }
                     return _instance;
                 }
@@ -94,7 +94,7 @@ namespace ThanhDV.Utilities
                 }
                 catch (Exception e)
                 {
-                    Debug.LogException(e);
+                    Debug.Log($"<color=red>{e}</color>");
                 }
             }
         }
@@ -162,7 +162,7 @@ namespace ThanhDV.Utilities
                 }
                 catch (Exception e)
                 {
-                    Debug.LogException(e);
+                    Debug.Log($"<color=red>{e}</color>");
                 }
             }
         }

@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2026-01-19
+### Added
+- `ManualUpdate`
+
 ## [1.1.0] - 2025-10-03
 ### Updated
 - Make `EventDispatcher` work with Dependence Injection

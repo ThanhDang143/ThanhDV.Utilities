@@ -15,15 +15,21 @@ namespace ThanhDV.Utilities
     public static class SceneSwitcher
     {
         private static string[] _sceneNames = Array.Empty<string>();
+        private static string[] _scenePaths = Array.Empty<string>();
         private static int _selectedIndex;
         private static string _lastActiveScene = "";
         private static VisualElement _toolbarUI;
         private static VisualElement _rightContainer;
         private static string _customScenePath;
 
+        private static bool _sceneListDirty = true;
+        private static double _nextAllowedRefreshTime;
+
         private const float DROPDOWN_BOX_HEIGHT = 20f;
-        private const string DEFAULT_SCENE_PATH = "Assets/Games";
+        private const string DEFAULT_SCENE_PATH = "Assets";
         private const string SCENE_PATH_PREF_KEY = "SceneSwitcher_CustomScenePath";
+
+        private const double REFRESH_INTERVAL_SECONDS = 1.0;
 
         private static bool FetchAllScenes
         {
@@ -50,8 +56,7 @@ namespace ThanhDV.Utilities
 
         static SceneSwitcher()
         {
-            RefreshSceneList();
-            SelectCurrentScene();
+            RefreshSceneListIfNeeded(force: true);
 
             EditorSceneManager.activeSceneChangedInEditMode += (_, _) => UpdateSceneSelection();
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
@@ -68,7 +73,13 @@ namespace ThanhDV.Utilities
 
         private static void OnProjectChanged()
         {
+            MarkSceneListDirty();
             EditorApplication.delayCall += EnsureToolbarUI;
+        }
+
+        private static void MarkSceneListDirty()
+        {
+            _sceneListDirty = true;
         }
 
         private static void EnsureToolbarUI()
@@ -104,37 +115,32 @@ namespace ThanhDV.Utilities
 
         private static void OnGUI()
         {
-            CheckAndRefreshScenes();
+            RefreshSceneListIfNeeded();
 
-            if (_selectedIndex >= _sceneNames.Length)
+            if (_sceneNames.Length == 0)
+            {
                 _selectedIndex = 0;
+            }
+            else if (_selectedIndex >= _sceneNames.Length)
+            {
+                _selectedIndex = 0;
+            }
 
             var isPlaying = EditorApplication.isPlaying;
 
             GUILayout.BeginHorizontal();
 
             EditorGUI.BeginDisabledGroup(isPlaying);
-            var newFetchAllScenes = GUILayout.Toggle(FetchAllScenes
-                , FetchAllScenes ? "All Scenes" : "Build Settings"
-                , "Button"
-                , GUILayout.Height(DROPDOWN_BOX_HEIGHT));
+            var newFetchAllScenes = GUILayout.Toggle(FetchAllScenes, FetchAllScenes ? "All Scenes" : "Build Settings", "Button", GUILayout.Height(DROPDOWN_BOX_HEIGHT));
             if (newFetchAllScenes != FetchAllScenes)
             {
                 FetchAllScenes = newFetchAllScenes;
-                RefreshSceneList();
-                SelectCurrentScene();
+                MarkSceneListDirty();
             }
 
             if (FetchAllScenes)
             {
-                GUILayout.Space(5);
-                var newPath = EditorGUILayout.TextField(CustomScenePath, GUILayout.Width(150), GUILayout.Height(DROPDOWN_BOX_HEIGHT));
-                if (newPath != CustomScenePath)
-                {
-                    CustomScenePath = newPath;
-                    RefreshSceneList();
-                    SelectCurrentScene();
-                }
+                CustomScenePath = DEFAULT_SCENE_PATH;
             }
 
             var popupStyle = new GUIStyle(EditorStyles.popup)
@@ -142,72 +148,61 @@ namespace ThanhDV.Utilities
                 fixedHeight = DROPDOWN_BOX_HEIGHT
             };
 
-            var newIndex = EditorGUILayout.Popup(_selectedIndex, _sceneNames, popupStyle, GUILayout.Width(150), GUILayout.Height(DROPDOWN_BOX_HEIGHT));
+            var displayNames = _sceneNames.Length == 0 ? new[] { "(No Scenes)" } : _sceneNames;
+            var newIndex = EditorGUILayout.Popup(_selectedIndex, displayNames, popupStyle, GUILayout.Width(150), GUILayout.Height(DROPDOWN_BOX_HEIGHT));
 
             if (newIndex != _selectedIndex)
             {
                 _selectedIndex = newIndex;
-                LoadScene(_sceneNames[_selectedIndex]);
+
+                if (_sceneNames.Length > 0)
+                {
+                    LoadSceneAtIndex(_selectedIndex);
+                }
             }
             EditorGUI.EndDisabledGroup();
 
             GUILayout.EndHorizontal();
         }
 
-        private static void RefreshSceneList()
+        private static void RefreshSceneListIfNeeded(bool force = false)
         {
-            if (FetchAllScenes)
+            if (!force)
             {
-                string path = CustomScenePath;
-                if (Directory.Exists(path))
-                {
-                    _sceneNames = Directory.GetFiles(path, "*.unity", SearchOption.AllDirectories)
-                        .Select(Path.GetFileNameWithoutExtension)
-                        .ToArray();
-                }
-                else
-                {
-                    _sceneNames = Array.Empty<string>();
-                    Debug.LogWarning($"Scene path '{path}' does not exist. Please enter a valid directory.");
-                }
+                if (!_sceneListDirty && EditorApplication.timeSinceStartup < _nextAllowedRefreshTime)
+                    return;
             }
-            else
-            {
-                _sceneNames = EditorBuildSettings.scenes
-                    .Where(scene => scene.enabled)
-                    .Select(scene => Path.GetFileNameWithoutExtension(scene.path))
-                    .ToArray();
-            }
+
+            _sceneListDirty = false;
+            _nextAllowedRefreshTime = EditorApplication.timeSinceStartup + REFRESH_INTERVAL_SECONDS;
+
+            BuildSceneList(out _sceneNames, out _scenePaths);
+            SelectCurrentScene();
         }
 
-        private static void CheckAndRefreshScenes()
+        private static void BuildSceneList(out string[] sceneNames, out string[] scenePaths)
         {
-            string[] currentScenes;
             if (FetchAllScenes)
             {
                 string path = CustomScenePath;
                 if (Directory.Exists(path))
                 {
-                    currentScenes = Directory.GetFiles(path, "*.unity", SearchOption.AllDirectories)
-                        .Select(Path.GetFileNameWithoutExtension)
-                        .ToArray();
+                    var paths = Directory.GetFiles(path, "*.unity", SearchOption.AllDirectories);
+                    scenePaths = paths;
+                    sceneNames = paths.Select(Path.GetFileNameWithoutExtension).ToArray();
                 }
                 else
                 {
-                    currentScenes = Array.Empty<string>();
+                    sceneNames = Array.Empty<string>();
+                    scenePaths = Array.Empty<string>();
                 }
             }
             else
             {
-                currentScenes = EditorBuildSettings.scenes
-                    .Where(scene => scene.enabled)
-                    .Select(scene => Path.GetFileNameWithoutExtension(scene.path))
-                    .ToArray();
+                var scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).ToArray();
+                scenePaths = scenes.Select(scene => scene.path).ToArray();
+                sceneNames = scenePaths.Select(Path.GetFileNameWithoutExtension).ToArray();
             }
-
-            if (currentScenes.SequenceEqual(_sceneNames)) return;
-            _sceneNames = currentScenes;
-            SelectCurrentScene();
         }
 
         private static void SelectCurrentScene()
@@ -227,29 +222,12 @@ namespace ThanhDV.Utilities
             SelectCurrentScene();
         }
 
-        private static void LoadScene(string sceneName)
+        private static void LoadSceneAtIndex(int sceneIndex)
         {
-            string scenePath;
+            if (sceneIndex < 0 || sceneIndex >= _scenePaths.Length)
+                return;
 
-            if (FetchAllScenes)
-            {
-                string path = CustomScenePath;
-                if (Directory.Exists(path))
-                {
-                    scenePath = Directory.GetFiles(path, "*.unity", SearchOption.AllDirectories)
-                        .FirstOrDefault(p => Path.GetFileNameWithoutExtension(p) == sceneName);
-                }
-                else
-                {
-                    Debug.LogError($"Scene path '{path}' does not exist.");
-                    return;
-                }
-            }
-            else
-            {
-                scenePath = EditorBuildSettings.scenes
-                    .FirstOrDefault(scene => scene.enabled && scene.path.Contains(sceneName))?.path;
-            }
+            var scenePath = _scenePaths[sceneIndex];
 
             if (!string.IsNullOrEmpty(scenePath))
             {
@@ -260,7 +238,7 @@ namespace ThanhDV.Utilities
             }
             else
             {
-                Debug.LogError($"Scene not found: {sceneName}");
+                Debug.Log("<color=red>[SceneSwitcher] Scene path is empty!!!");
             }
         }
 

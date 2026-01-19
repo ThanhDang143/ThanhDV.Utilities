@@ -1,5 +1,5 @@
 {
-    "name": "ThanhDV.Utilities",
+    "name": "ThanhDV.Utilities.RectTransformExtensions",
     "rootNamespace": "ThanhDV.Utilities",
     "references": [],
     "includePlatforms": [],
