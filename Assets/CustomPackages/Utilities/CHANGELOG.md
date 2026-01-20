@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.1] - 2026-01-20
+### Update
+- `README`
+
 ## [1.3.0] - 2026-01-19
 ### Update
 - `ManualUpdate`
