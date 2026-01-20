@@ -1,76 +1,84 @@
 
 # ManualUpdate
 
-`ManualUpdate` is a small utility that lets you run “update-like” logic **manually** from a central place, instead of relying on many Unity `MonoBehaviour.Update()` calls.
+`ManualUpdate` is a small utility that runs “update-like” logic **manually** from one or more explicit update loops.
 
-It is useful when you want:
-
-- One or many independent update loops you control (pause, step, custom order, custom timing)
-- To avoid scattering update logic across many components
-- To update non-`MonoBehaviour` objects
-
-The API is intentionally minimal: implement one interface and register/unregister.
+Instead of relying on many `MonoBehaviour.Update()` methods, you create a `ManualUpdater<TMarker>` and call its `Execute()` method wherever you want (Update / FixedUpdate / LateUpdate / custom loop).
 
 Namespace: `ThanhDV.Utilities`
 
-## How it works
+## Core API
 
-- `ManualUpdater` is an **instance-based** container that owns a set of `IManualUpdate` items.
-- You can create multiple updaters (`a`, `b`, `c`) and call `a.ManualUpdate()`, `c.ManualUpdate()`, `b.ManualUpdate()` in any order, from any loop.
-- Registration and removal are queued and applied at the start of `ManualUpdate()` to keep iteration safe.
-- Destroyed Unity objects are cleaned up automatically (`UnityEngine.Object` fake-null).
+- `IManualUpdate` — implement `ExecuteUpdate()`.
+- `ManualUpdater<TMarker>` — owns a set of updateables for a given marker key.
+- `ManualUpdateRegistry` — static registry keyed by marker type, allowing updateables to register **before** the updater is created (pending + flush).
 
-## Quick Start (Unity)
+## Marker keys (no strings)
 
-### 1) Create a driver that runs an updater
+This package uses a **marker struct type** as the channel key.
+
+Example markers:
 
 ```csharp
-using UnityEngine;
-using ThanhDV.Utilities;
-
-public sealed class ManualUpdateDriver : MonoBehaviour
+public static class ManualUpdateChannel
 {
-	public ManualUpdater Updater { get; private set; }
-
-	private void Awake()
-	{
-		Updater = new ManualUpdater();
-	}
-
-	private void Update()
-	{
-		Updater.ManualUpdate();
-	}
+	public struct FixedUpdate { }
+	public struct Update { }
+	public struct LateUpdate { }
 }
 ```
 
-### 2) Register updateables into a specific updater
+Benefits:
+- No `null/empty/whitespace` ids.
+- Strongly-typed channels.
 
-This example shows a component that registers into a chosen `ManualUpdateDriver`.
+## Quick start (Unity)
+
+### 1) Create updaters for each loop
 
 ```csharp
-using UnityEngine;
 using ThanhDV.Utilities;
+using UnityEngine;
+
+public sealed class UpdateTest : MonoBehaviour
+{
+	private ManualUpdater<ManualUpdateChannel.FixedUpdate> fixedUpdater;
+	private ManualUpdater<ManualUpdateChannel.Update> updateUpdater;
+	private ManualUpdater<ManualUpdateChannel.LateUpdate> lateUpdater;
+
+	private void Awake()
+	{
+		fixedUpdater = new();
+		updateUpdater = new();
+		lateUpdater = new();
+	}
+
+	private void FixedUpdate() => fixedUpdater.Execute();
+	private void Update()      => updateUpdater.Execute();
+	private void LateUpdate()  => lateUpdater.Execute();
+}
+```
+
+### 2) Updateable as MonoBehaviour
+
+Use this pattern when the updateable is a Unity component. It unregisters automatically on disable/destroy.
+
+```csharp
+using ThanhDV.Utilities;
+using UnityEngine;
 
 public sealed class SpinManually : MonoBehaviour, IManualUpdate
 {
-	[SerializeField] private ManualUpdateDriver driver;
 	[SerializeField] private float speed = 180f;
 
 	private void OnEnable()
 	{
-		if (driver != null && driver.Updater != null)
-		{
-			driver.Updater.Register(this);
-		}
+		ManualUpdateRegistry.Register<ManualUpdateChannel.Update>(this);
 	}
 
 	private void OnDisable()
 	{
-		if (driver != null && driver.Updater != null)
-		{
-			driver.Updater.Unregister(this);
-		}
+		ManualUpdateRegistry.Unregister<ManualUpdateChannel.Update>(this);
 	}
 
 	public void ExecuteUpdate()
@@ -80,21 +88,61 @@ public sealed class SpinManually : MonoBehaviour, IManualUpdate
 }
 ```
 
+### 3) Updateable as non-MonoBehaviour (plain C# class)
+
+Use this pattern for pure C# objects. You must keep a reference and call `Dispose()` (or otherwise unregister) when done.
+
+```csharp
+using System;
+using ThanhDV.Utilities;
+using UnityEngine;
+
+public sealed class Test : IManualUpdate, IDisposable
+{
+	public Test()
+	{
+		ManualUpdateRegistry.Register<ManualUpdateChannel.Update>(this);
+	}
+
+	public void Dispose()
+	{
+		ManualUpdateRegistry.Unregister<ManualUpdateChannel.Update>(this);
+	}
+
+	public void ExecuteUpdate()
+	{
+		Debug.Log("Test - Update");
+	}
+}
+```
+
 ## Behavior details
 
-- **Last call wins (per frame)**: if you call `Register(x)` then `Unregister(x)` before the next `ManualUpdate()` flush, `x` will end up unregistered (and vice-versa).
-- **Safe while ticking**: calling `Register/Unregister` from inside `ExecuteUpdate()` will not modify the active set while it is being iterated.
+- **Safe during ticking**: registrations/removals are queued and flushed at the start of `ManualUpdater<TMarker>.Execute()`.
+- **Last call wins (pending)**: if you call register then unregister (or vice-versa) before the updater exists, the last call wins.
+- **Destroyed Unity objects cleanup**: during `Execute()`, the updater removes entries that are `null` or Unity “fake-null” objects.
 
-## Known limitation / existing issue
+## Important notes / pitfalls
 
-- **You cannot register before a `ManualUpdater` exists.**
-	Because this design is instance-based (no static global registry), updateables must know *which updater instance* they belong to.
-	In Unity, this typically means:
-	- Create the updater early (e.g., a driver in the startup scene, created in `Awake()`), or
-	- Inject/pass the updater (or driver) into the object before it tries to register.
+### 1) One updater per marker
 
-## Notes / best practices
+`ManualUpdateRegistry.Bind<TMarker>(...)` enforces a single updater per marker.
+Creating a second `ManualUpdater<TMarker>` while the first one is still bound will throw.
 
-- Keep the number of updaters small and purposeful (e.g., one for gameplay, one for UI), unless you truly need many groups.
-- `IManualUpdate.ExecuteUpdate()` has no parameters. If you need delta time, use `Time.deltaTime` (Unity main thread) or define your own interface.
+If you need to rebuild an updater, dispose the old one first:
+
+```csharp
+updateUpdater.Dispose();
+updateUpdater = new ManualUpdater<ManualUpdateChannel.Update>();
+```
+
+### 2) Creating updateables without keeping a reference
+
+If you do `new Test4();` and never store it anywhere, it can still be kept alive by the registry/updater (because it holds a strong reference).
+Without a reference, you cannot call `Dispose()` to unregister.
+
+Recommended patterns:
+
+- Keep a reference and dispose/unregister when done.
+- Prefer UnityEngine.Object-based updateables (MonoBehaviour/ScriptableObject) if you want Unity destruction semantics.
 

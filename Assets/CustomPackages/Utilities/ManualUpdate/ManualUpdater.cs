@@ -2,13 +2,20 @@ using System.Collections.Generic;
 
 namespace ThanhDV.Utilities
 {
-    public class ManualUpdater
+    public class ManualUpdater<TMarker> : System.IDisposable where TMarker : struct
     {
-        private HashSet<IManualUpdate> manualUpdates = new();
-        private HashSet<IManualUpdate> manualUpdatesWaitToAdd = new();
-        private HashSet<IManualUpdate> manualUpdatesWaitToRemove = new();
+        private readonly HashSet<IManualUpdate> manualUpdates = new();
+        private readonly HashSet<IManualUpdate> manualUpdatesWaitToAdd = new();
+        private readonly HashSet<IManualUpdate> manualUpdatesWaitToRemove = new();
 
-        public void ManualUpdate()
+        public System.Type MarkerType => typeof(TMarker);
+
+        public ManualUpdater()
+        {
+            ManualUpdateRegistry.Bind<TMarker>(Register, Unregister);
+        }
+
+        public void Execute()
         {
             if (manualUpdatesWaitToAdd.Count > 0)
             {
@@ -36,7 +43,7 @@ namespace ThanhDV.Utilities
             }
         }
 
-        public void Register(IManualUpdate manualUpdate)
+        private void Register(IManualUpdate manualUpdate)
         {
             if (manualUpdate == null) return;
 
@@ -44,13 +51,17 @@ namespace ThanhDV.Utilities
             manualUpdatesWaitToAdd.Add(manualUpdate);
         }
 
-        public void Unregister(IManualUpdate manualUpdate)
+        private void Unregister(IManualUpdate manualUpdate)
         {
             if (manualUpdate == null) return;
 
             manualUpdatesWaitToAdd.Remove(manualUpdate);
             manualUpdatesWaitToRemove.Add(manualUpdate);
         }
+
+        public void Dispose()
+        {
+            ManualUpdateRegistry.Unbind<TMarker>(Register, Unregister);
+        }
     }
 }
-

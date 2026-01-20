@@ -1,6 +1,6 @@
 {
     "name": "thanhdv.utilities",
-    "version": "1.2.0",
+    "version": "1.3.0",
     "displayName": "ThanhDV's Utilities",
     "description": "This library contains some utilities for Unity development.",
     "unity": "2022.3",
