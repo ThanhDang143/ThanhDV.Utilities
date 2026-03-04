@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.2] - 2026-03-04
+### Update
+- Singleton
+
 ## [1.3.1] - 2026-01-20
 ### Update
 - `README`

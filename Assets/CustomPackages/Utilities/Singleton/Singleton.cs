@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace ThanhDV.Utilities
 {
+    /// <summary>
+    /// Singleton for pure C# classes (Non-MonoBehaviour).
+    /// </summary>
     public class Singleton<T> where T : class, new()
     {
         private static T _instance;
@@ -16,8 +19,7 @@ namespace ThanhDV.Utilities
                     if (_instance == null)
                     {
                         _instance = new T();
-
-                        Debug.Log($"<color=yellow>[Singleton] {_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
+                        Debug.Log($"<color=yellow>[Singleton] {_instance.GetType().Name} created!</color>");
                     }
                     return _instance;
                 }
@@ -27,15 +29,25 @@ namespace ThanhDV.Utilities
         public static bool IsExist => _instance != null;
     }
 
+    /// <summary>
+    /// Singleton for MonoBehaviour. Safely handles initialization and destruction.
+    /// </summary>
     public class MonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {
         private static T _instance;
         private static readonly object _lock = new object();
+        private static bool _applicationIsQuitting = false;
 
         public static T Instance
         {
             get
             {
+                if (_applicationIsQuitting)
+                {
+                    Debug.Log($"<color=yellow>[Singleton] Instance '{typeof(T)}' already destroyed on application quit. Won't create again - returning null.");
+                    return null;
+                }
+
                 lock (_lock)
                 {
                     if (_instance == null)
@@ -44,12 +56,14 @@ namespace ThanhDV.Utilities
 
                         if (_instance == null)
                         {
-                            _instance = new GameObject().AddComponent<T>();
-                            _instance.gameObject.name = _instance.GetType().Name;
+                            GameObject singletonObject = new GameObject();
+                            _instance = singletonObject.AddComponent<T>();
+                            singletonObject.name = typeof(T).Name;
 
-                            Debug.Log($"<color=yellow>[Singleton] {_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
+                            Debug.Log($"<color=yellow>[Singleton] {typeof(T).Name} instance created (Lazy)!</color>");
                         }
                     }
+
                     return _instance;
                 }
             }
@@ -57,61 +71,45 @@ namespace ThanhDV.Utilities
 
         public static bool IsExist => _instance != null;
 
-        // Check for case have many instance of T
         protected virtual void Awake()
         {
             if (_instance == null)
             {
                 _instance = this as T;
-                return;
+                OnAwake();
             }
+            else if (_instance != this)
+            {
+                Debug.Log($"<color=yellow>[Singleton] Another instance of {typeof(T)} detected! Destroying new one.");
+                Destroy(gameObject);
+            }
+        }
 
-            Destroy(gameObject);
+        protected virtual void OnAwake() { }
+
+        protected virtual void OnApplicationQuit()
+        {
+            _applicationIsQuitting = true;
+        }
+
+        protected virtual void OnDestroy()
+        {
+            if (_instance == this)
+            {
+                _applicationIsQuitting = true;
+            }
         }
     }
 
-    public class PersistentMonoSingleton<T> : MonoBehaviour where T : MonoBehaviour
+    /// <summary>
+    /// A Singleton that persists across Scenes (DontDestroyOnLoad).
+    /// </summary>
+    public class PersistentMonoSingleton<T> : MonoSingleton<T> where T : MonoBehaviour
     {
-        private static T _instance;
-        private static readonly object _lock = new object();
-
-        public static T Instance
+        protected override void OnAwake()
         {
-            get
-            {
-                lock (_lock)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = FindFirstObjectByType(typeof(T)) as T;
-
-                        if (_instance == null)
-                        {
-                            _instance = new GameObject().AddComponent<T>();
-                            _instance.gameObject.name = _instance.GetType().Name;
-
-                            Debug.Log($"<color=yellow>[Singleton] {_instance.GetType().Name} instance is null!!! Auto create new instance!!!</color>");
-                        }
-                        DontDestroyOnLoad(_instance);
-                    }
-                    return _instance;
-                }
-            }
-        }
-
-        public static bool IsExist => _instance != null;
-
-        // Check for case have many instance of T
-        protected virtual void Awake()
-        {
-            if (_instance == null)
-            {
-                _instance = this as T;
-                DontDestroyOnLoad(_instance);
-                return;
-            }
-
-            Destroy(gameObject);
+            base.OnAwake();
+            DontDestroyOnLoad(gameObject);
         }
     }
 }

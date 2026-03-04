@@ -49,3 +49,28 @@ public class SaveSystem : PersistentMonoSingleton<SaveSystem>
     public void Save() { /* ... */ }
 }
 ```
+
+### Use `OnAwake()` instead of `Awake()`
+The `MonoSingleton<T>` and `PersistentMonoSingleton<T>` classes implement their own `Awake()` method to handle initialization logic (checking for duplicates, setting the instance, etc.).
+
+**Do not override `Awake()` directly** in your derived classes, as this hides the base implementation and breaks the Singleton pattern. Instead, override the `OnAwake()` method:
+
+```csharp
+public class GameManager : PersistentMonoSingleton<GameManager>
+{
+    // CORRECT: Override OnAwake for initialization logic
+    protected override void OnAwake()
+    {
+        // Your initialization code here
+        Debug.Log("GameManager initialized!");
+    }
+    
+    /* 
+    // WRONG: This prevents the Singleton logic from running!
+    private void Awake() 
+    {
+        // ...
+    } 
+    */
+}
+```
