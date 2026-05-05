@@ -1,10 +1,14 @@
 #if UNITY_EDITOR
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+#if UNITY_6000_0_OR_NEWER
+using UnityEditor.Toolbars;
+#endif
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
@@ -18,8 +22,10 @@ namespace ThanhDV.Utilities
         private static string[] _scenePaths = Array.Empty<string>();
         private static int _selectedIndex;
         private static string _lastActiveScene = "";
+#if !UNITY_6000_0_OR_NEWER
         private static VisualElement _toolbarUI;
         private static VisualElement _rightContainer;
+#endif
         private static string _customScenePath;
 
         private static bool _sceneListDirty = true;
@@ -30,6 +36,9 @@ namespace ThanhDV.Utilities
         private const string SCENE_PATH_PREF_KEY = "SceneSwitcher_CustomScenePath";
 
         private const double REFRESH_INTERVAL_SECONDS = 1.0;
+#if UNITY_6000_0_OR_NEWER
+        private const string MAIN_TOOLBAR_PATH = "ThanhDV.Utilities/SceneSwitcher";
+#endif
 
         private static bool FetchAllScenes
         {
@@ -58,23 +67,39 @@ namespace ThanhDV.Utilities
         {
             RefreshSceneListIfNeeded(force: true);
 
-            EditorSceneManager.activeSceneChangedInEditMode += (_, _) => UpdateSceneSelection();
+            EditorSceneManager.activeSceneChangedInEditMode += (_, _) =>
+            {
+                UpdateSceneSelection();
+#if UNITY_6000_0_OR_NEWER
+                RefreshToolbarUI();
+#else
+                EditorApplication.delayCall += EnsureToolbarUI;
+#endif
+            };
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
-            EditorApplication.hierarchyChanged += OnHierarchyChanged;
             EditorApplication.projectChanged += OnProjectChanged;
 
+#if !UNITY_6000_0_OR_NEWER
+            EditorApplication.hierarchyChanged += OnHierarchyChanged;
             EditorApplication.delayCall += EnsureToolbarUI;
+#endif
         }
 
+#if !UNITY_6000_0_OR_NEWER
         private static void OnHierarchyChanged()
         {
             EditorApplication.delayCall += EnsureToolbarUI;
         }
+#endif
 
         private static void OnProjectChanged()
         {
             MarkSceneListDirty();
+#if UNITY_6000_0_OR_NEWER
+            RefreshToolbarUI();
+#else
             EditorApplication.delayCall += EnsureToolbarUI;
+#endif
         }
 
         private static void MarkSceneListDirty()
@@ -82,6 +107,7 @@ namespace ThanhDV.Utilities
             _sceneListDirty = true;
         }
 
+#if !UNITY_6000_0_OR_NEWER
         private static void EnsureToolbarUI()
         {
             var toolbarType = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.Toolbar");
@@ -112,7 +138,88 @@ namespace ThanhDV.Utilities
                 _rightContainer.RegisterCallback<DetachFromPanelEvent>(_ => EditorApplication.delayCall += EnsureToolbarUI);
             }
         }
+#endif
 
+#if UNITY_6000_0_OR_NEWER
+        [MainToolbarElement(MAIN_TOOLBAR_PATH, defaultDockPosition = MainToolbarDockPosition.Right)]
+        private static IEnumerable<MainToolbarElement> CreateMainToolbarElements()
+        {
+            RefreshSceneListIfNeeded();
+
+            var isPlaying = EditorApplication.isPlaying;
+            var toggleButton = new MainToolbarButton(
+                new MainToolbarContent(FetchAllScenes ? "All Scenes" : "Build Settings", "Toggle the scene source"),
+                ToggleSceneSource)
+            {
+                enabled = !isPlaying
+            };
+
+            var selectedSceneName = GetSelectedSceneDisplayName();
+            var dropdown = new MainToolbarDropdown(
+                new MainToolbarContent(selectedSceneName, "Select and open a scene"),
+                ShowSceneDropdownMenu)
+            {
+                enabled = !isPlaying
+            };
+
+            return new MainToolbarElement[] { toggleButton, dropdown };
+        }
+
+        private static void ToggleSceneSource()
+        {
+            FetchAllScenes = !FetchAllScenes;
+            if (FetchAllScenes)
+            {
+                CustomScenePath = DEFAULT_SCENE_PATH;
+            }
+
+            MarkSceneListDirty();
+            RefreshSceneListIfNeeded(force: true);
+            RefreshToolbarUI();
+        }
+
+        private static string GetSelectedSceneDisplayName()
+        {
+            if (_sceneNames.Length == 0)
+                return "(No Scenes)";
+
+            if (_selectedIndex < 0 || _selectedIndex >= _sceneNames.Length)
+                SelectCurrentScene();
+
+            if (_selectedIndex < 0 || _selectedIndex >= _sceneNames.Length)
+                return _sceneNames[0];
+
+            return _sceneNames[_selectedIndex];
+        }
+
+        private static void ShowSceneDropdownMenu(Rect dropDownRect)
+        {
+            RefreshSceneListIfNeeded();
+
+            var menu = new GenericMenu();
+            if (_scenePaths.Length == 0)
+            {
+                menu.AddDisabledItem(new GUIContent("No Scenes"));
+                menu.DropDown(dropDownRect);
+                return;
+            }
+
+            for (var index = 0; index < _scenePaths.Length; index++)
+            {
+                var itemIndex = index;
+                var sceneName = _sceneNames[itemIndex];
+                var isSelected = itemIndex == _selectedIndex;
+                menu.AddItem(new GUIContent(sceneName), isSelected, () => LoadSceneAtIndex(itemIndex));
+            }
+
+            menu.DropDown(dropDownRect);
+        }
+
+        private static void RefreshToolbarUI()
+        {
+            MainToolbar.Refresh(MAIN_TOOLBAR_PATH);
+        }
+#else
         private static void OnGUI()
         {
             RefreshSceneListIfNeeded();
@@ -164,6 +271,7 @@ namespace ThanhDV.Utilities
 
             GUILayout.EndHorizontal();
         }
+#endif
 
         private static void RefreshSceneListIfNeeded(bool force = false)
         {
@@ -208,9 +316,16 @@ namespace ThanhDV.Utilities
         private static void SelectCurrentScene()
         {
             var currentScene = Path.GetFileNameWithoutExtension(SceneManager.GetActiveScene().path);
+
+            if (_sceneNames.Length == 0)
+            {
+                _selectedIndex = 0;
+                _lastActiveScene = currentScene;
+                return;
+            }
+
             var index = Array.IndexOf(_sceneNames, currentScene);
-            if (index == -1) return;
-            _selectedIndex = index;
+            _selectedIndex = index == -1 ? 0 : index;
             _lastActiveScene = currentScene;
         }
 
@@ -233,7 +348,11 @@ namespace ThanhDV.Utilities
             {
                 if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
                 {
+                    _selectedIndex = sceneIndex;
                     EditorSceneManager.OpenScene(scenePath);
+#if UNITY_6000_0_OR_NEWER
+                    RefreshToolbarUI();
+#endif
                 }
             }
             else
@@ -244,9 +363,13 @@ namespace ThanhDV.Utilities
 
         private static void OnPlayModeChanged(PlayModeStateChange state)
         {
-            if (state == PlayModeStateChange.EnteredPlayMode || state == PlayModeStateChange.ExitingPlayMode)
+            if (state == PlayModeStateChange.EnteredPlayMode || state == PlayModeStateChange.ExitingPlayMode || state == PlayModeStateChange.EnteredEditMode)
             {
+#if UNITY_6000_0_OR_NEWER
+                RefreshToolbarUI();
+#else
                 EditorApplication.delayCall += EnsureToolbarUI;
+#endif
             }
         }
     }

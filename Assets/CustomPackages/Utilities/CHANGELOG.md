@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.5] - 2026-05-05
+### Update
+- SceneSwitcher with Unity 6
+
 ## [1.3.2] - 2026-03-04
 ### Update
 - Singleton
