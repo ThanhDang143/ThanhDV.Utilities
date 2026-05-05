@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.6] - 2026-05-05
+### Fixed
+- DebugDrawingExtension re-create metadata
+
 ## [1.3.5] - 2026-05-05
 ### Update
 - SceneSwitcher with Unity 6
