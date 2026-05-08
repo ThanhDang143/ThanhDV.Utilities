@@ -44,14 +44,46 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.VERDACCIO_TOKEN }}
 
-      # Step 6: Send a Discord notification (runs regardless of Step 5 result)
-      - name: Discord Notification
-        if: always()
+      # Step 6: Send a Discord notification based on job result
+      # 1. Notify on SUCCESS
+      - name: Discord Notification (Success)
+        if: success()
         uses: sarisia/actions-status-discord@v1
         with:
           webhook: ${{ secrets.DISCORD_WEBHOOK }}
-          status: ${{ job.status }}
-          title: "Publish Result: ${{ job.status }}"
+          username: "GitHub Actions CI/CD"
+          status: success
+          nodetail: true # Removes extra detail lines (author, branch, commit) from the notification
+          title: "✅ Success: ${{ github.workflow }}"
           description: |
-            The publish process for Unity Package `${{ steps.pkg-info.outputs.name }}@${{ steps.pkg-info.outputs.version }}` (Tag: ${{ github.ref_name }}) completed with status **${{ job.status }}**.
-            [View build log details here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
+            Job `${{ github.workflow }}` build #${{ github.run_number }} published package `${{ steps.pkg-info.outputs.name }}@${{ steps.pkg-info.outputs.version }}` successfully.
+            Build Log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            Package URL: https://upm.thanhdv.com/-/web/detail/${{ steps.pkg-info.outputs.name }}
+
+      # 2. Notify on FAILURE
+      - name: Discord Notification (Failure)
+        if: failure()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          username: "GitHub Actions CI/CD"
+          status: failure
+          nodetail: true
+          title: "❌ Failure: ${{ github.workflow }}"
+          description: |
+            Job `${{ github.workflow }}` build #${{ github.run_number }} failed to publish package `${{ steps.pkg-info.outputs.name }}`.
+            Build Log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      
+      # 3. Notify on CANCELLED
+      - name: Discord Notification (Cancelled)
+        if: cancelled()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          username: "GitHub Actions CI/CD"
+          status: cancelled
+          nodetail: true
+          title: "ℹ️ Cancelled: ${{ github.workflow }}"
+          description: |
+            Build #${{ github.run_number }} for job `${{ github.workflow }}` was aborted manually.
+            Build Log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
