@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEditor;
 using UnityEditor.SceneManagement;
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_3_OR_NEWER
 using UnityEditor.Toolbars;
 #endif
 using UnityEngine;
@@ -22,7 +22,7 @@ namespace ThanhDV.Utilities
         private static string[] _scenePaths = Array.Empty<string>();
         private static int _selectedIndex;
         private static string _lastActiveScene = "";
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
         private static VisualElement _toolbarUI;
         private static VisualElement _rightContainer;
 #endif
@@ -36,7 +36,7 @@ namespace ThanhDV.Utilities
         private const string SCENE_PATH_PREF_KEY = "SceneSwitcher_CustomScenePath";
 
         private const double REFRESH_INTERVAL_SECONDS = 1.0;
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_3_OR_NEWER
         private const string MAIN_TOOLBAR_PATH = "ThanhDV.Utilities/SceneSwitcher";
 #endif
 
@@ -70,7 +70,7 @@ namespace ThanhDV.Utilities
             EditorSceneManager.activeSceneChangedInEditMode += (_, _) =>
             {
                 UpdateSceneSelection();
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_3_OR_NEWER
                 RefreshToolbarUI();
 #else
                 EditorApplication.delayCall += EnsureToolbarUI;
@@ -79,13 +79,13 @@ namespace ThanhDV.Utilities
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
             EditorApplication.projectChanged += OnProjectChanged;
 
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
             EditorApplication.hierarchyChanged += OnHierarchyChanged;
             EditorApplication.delayCall += EnsureToolbarUI;
 #endif
         }
 
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
         private static void OnHierarchyChanged()
         {
             EditorApplication.delayCall += EnsureToolbarUI;
@@ -95,7 +95,7 @@ namespace ThanhDV.Utilities
         private static void OnProjectChanged()
         {
             MarkSceneListDirty();
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_3_OR_NEWER
             RefreshToolbarUI();
 #else
             EditorApplication.delayCall += EnsureToolbarUI;
@@ -107,7 +107,7 @@ namespace ThanhDV.Utilities
             _sceneListDirty = true;
         }
 
-#if !UNITY_6000_0_OR_NEWER
+#if !UNITY_6000_3_OR_NEWER
         private static void EnsureToolbarUI()
         {
             var toolbarType = typeof(UnityEditor.Editor).Assembly.GetType("UnityEditor.Toolbar");
@@ -140,7 +140,7 @@ namespace ThanhDV.Utilities
         }
 #endif
 
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_3_OR_NEWER
         [MainToolbarElement(MAIN_TOOLBAR_PATH, defaultDockPosition = MainToolbarDockPosition.Right)]
         private static IEnumerable<MainToolbarElement> CreateMainToolbarElements()
         {
@@ -350,7 +350,7 @@ namespace ThanhDV.Utilities
                 {
                     _selectedIndex = sceneIndex;
                     EditorSceneManager.OpenScene(scenePath);
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_3_OR_NEWER
                     RefreshToolbarUI();
 #endif
                 }
@@ -365,7 +365,7 @@ namespace ThanhDV.Utilities
         {
             if (state == PlayModeStateChange.EnteredPlayMode || state == PlayModeStateChange.ExitingPlayMode || state == PlayModeStateChange.EnteredEditMode)
             {
-#if UNITY_6000_0_OR_NEWER
+#if UNITY_6000_3_OR_NEWER
                 RefreshToolbarUI();
 #else
                 EditorApplication.delayCall += EnsureToolbarUI;

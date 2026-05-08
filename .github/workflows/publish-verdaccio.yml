@@ -1,0 +1,57 @@
+name: Publish to Verdaccio
+
+# Triggered when a Git Tag matching v* is pushed
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  publish-package:
+    runs-on: ubuntu-latest
+
+    # Set the default working directory to the Unity Tool package.json location
+    defaults:
+      run:
+        working-directory: Assets/CustomPackages/Utilities # <<<<<<< TODO: CHANGE FOR EACH PROJECT
+
+    steps:
+      # Step 1: Checkout the source code at the pushed tag
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js 22 and point to your Verdaccio registry
+      - name: Setup NodeJS 22 & Registry
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+          registry-url: 'https://upm.thanhdv.com'
+
+      # Step 3: Install required dependencies before packaging
+      - name: Install Dependencies
+        run: npm install
+
+      # Step 4: Extract package name and version from package.json for Discord notification
+      - name: Extract Package Info
+        id: pkg-info
+        run: |
+          echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+          echo "name=$(node -p "require('./package.json').name")" >> $GITHUB_OUTPUT
+
+      # Step 5: Pack and publish to Verdaccio using the secure token
+      - name: Publish to Verdaccio
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.VERDACCIO_TOKEN }}
+
+      # Step 6: Send a Discord notification (runs regardless of Step 5 result)
+      - name: Discord Notification
+        if: always()
+        uses: sarisia/actions-status-discord@v1
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          status: ${{ job.status }}
+          title: "Publish Result: ${{ job.status }}"
+          description: |
+            The publish process for Unity Package `${{ steps.pkg-info.outputs.name }}@${{ steps.pkg-info.outputs.version }}` (Tag: ${{ github.ref_name }}) completed with status **${{ job.status }}**.
+            [View build log details here](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})

@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.3.7] - 2026-05-08
+### Changed
+- Change CI/CD from Jenkins to GitHub Actions
+### Update
+- SceneSwitcher with Unity 6.3
+
 ## [1.3.6] - 2026-05-05
 ### Fixed
 - DebugDrawingExtension re-create metadata
