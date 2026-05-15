@@ -22,7 +22,7 @@ https://github.com/ThanhDV143/ThanhDV.Utilities.git?path=/Assets/CustomPackages/
 
 1. In Unity, open **Project Settings** → **Package Manager** → **Add New Scoped Registry**
 - ``Name`` ThanhDVs
-- ``URL`` https://upm.thanhdv.icu
+- ``URL`` https://upm.thanhdv.com
 - ``Scope(s)`` thanhdv
 
 2. In Unity, open **Window** → **Package Manager**.
