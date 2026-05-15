@@ -12,7 +12,7 @@ This library contains several reusable utilities for Unity development.
 ## Installation
 ### Unity Package Manager
 ```
-https://github.com/ThanhDang143/ThanhDV.Utilities.git?path=/Assets/CustomPackages/Utilities
+https://github.com/ThanhDV143/ThanhDV.Utilities.git?path=/Assets/CustomPackages/Utilities
 ```
 
 1. In Unity, open **Window** → **Package Manager**.
